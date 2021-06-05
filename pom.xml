@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.tikskit</groupId>
+    <artifactId>spring-framework-homeworks</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <description>Spring framework class homeworks</description>
+
+    <packaging>pom</packaging>
+
+    <developers>
+        <developer>
+            <name>Vitaliy Luzhnyh</name>
+            <email>tikskit@gmail.com</email>
+            <timezone>+7</timezone>
+            <roles>
+                <role>Student</role>
+            </roles>
+        </developer>
+    </developers>
+
+
+
+    <modules>
+<!--
+        <module>spring-01-exercise</module>
+        <module>spring-01-solution</module>
+-->
+    </modules>
+</project>
