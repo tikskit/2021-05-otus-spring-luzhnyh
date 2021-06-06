@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataProvider" class="ru.tikskit.service.GameDataProviderImpl"
+          factory-method="createInstance">
+    </bean>
+
+    <bean id="gameProcessor" class="ru.tikskit.service.GameProcessorImpl">
+        <constructor-arg name="gameDataProvider" ref="dataProvider"/>
+    </bean>
+</beans>
