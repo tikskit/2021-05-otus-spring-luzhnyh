@@ -1,6 +1,7 @@
 package ru.tikskit.service;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import ru.tikskit.domain.Option;
 import ru.tikskit.domain.Question;
 
@@ -16,10 +17,8 @@ import java.util.stream.Collectors;
 public class GameDataProviderImpl implements GameDataProvider{
     private final List<Question> questions;
 
-    public GameDataProviderImpl(Reader reader) throws Exception {
-        CSVReader csvReader = new CSVReader(reader);
-        List<String[]> csvContent = csvReader.readAll();
-
+    public GameDataProviderImpl(String csvFileName) throws Exception {
+        List<String[]> csvContent = readCsv(csvFileName);
         questions = new ArrayList<>();
         for (String[] line : csvContent) {
             List<Option> options = Arrays.stream(line, 1, line.length).
@@ -35,13 +34,13 @@ public class GameDataProviderImpl implements GameDataProvider{
         return questions;
     }
 
-
-    public static GameDataProvider createInstance() throws Exception {
+    private List<String[]> readCsv(String csvFileName) throws Exception {
         try (Reader reader = new BufferedReader(
                 new InputStreamReader(
-                        GameDataProvider.class.getResourceAsStream("/questions.csv")))) {
-
-            return new GameDataProviderImpl(reader);
+                        GameDataProvider.class.getResourceAsStream(csvFileName)))) {
+            CSVReader csvReader = new CSVReader(reader);
+            return csvReader.readAll();
         }
     }
+
 }
