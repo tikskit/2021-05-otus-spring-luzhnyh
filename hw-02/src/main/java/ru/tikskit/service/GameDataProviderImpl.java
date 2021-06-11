@@ -1,6 +1,7 @@
 package ru.tikskit.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import ru.tikskit.domain.Option;
 import ru.tikskit.domain.Question;
@@ -11,10 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource("classpath:/application.properties")
 public class GameDataProviderImpl implements GameDataProvider{
     private final List<Question> questions;
 
-    public GameDataProviderImpl(@Value("${classpath:/questions.csv}")String csvFileName) throws Exception {
+    public GameDataProviderImpl(@Value("${questions.file.path}")String csvFileName) throws Exception {
         List<String[]> csvContent = readGameDataFromFile(csvFileName);
         questions = new ArrayList<>();
         for (String[] line : csvContent) {

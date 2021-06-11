@@ -25,11 +25,11 @@ public class GameProcessorImpl implements GameProcessor {
     }
 
     private PlayerInfo askPlayerInfo() {
-        System.out.print("Enter user name: ");
+        System.out.print("Enter player name: ");
         Scanner s = new Scanner(System.in);
         String name = s.nextLine();
 
-        System.out.print("Enter user surname: ");
+        System.out.print("Enter player surname: ");
         String surname = s.nextLine();
 
 

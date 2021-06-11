@@ -31,7 +31,7 @@ class QuestionIOConsole implements QuestionIO {
 
         Integer optionIndex;
         do {
-            System.out.print("Type your answer: ");
+            System.out.print("Type your answer number: ");
             String value = s.nextLine();
             optionIndex = typedValue2OptionIndex(value, optionsCount);
 
