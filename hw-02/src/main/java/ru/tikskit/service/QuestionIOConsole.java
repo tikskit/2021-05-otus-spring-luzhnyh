@@ -1,13 +1,24 @@
 package ru.tikskit.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
 
 @Service
 class QuestionIOConsole implements QuestionIO {
+
+    private final BufferedReader reader;
+
+    public QuestionIOConsole(
+            @Value("#{new java.io.BufferedReader(new java.io.InputStreamReader(T(java.lang.System).in))}")
+                    BufferedReader reader) {
+        this.reader = reader;
+    }
 
     @Override
     public int askQuestion(String questionText, String[] options) {
@@ -27,12 +38,15 @@ class QuestionIOConsole implements QuestionIO {
     }
 
     private int getUserAnswer(int optionsCount) {
-        Scanner s = new Scanner(System.in);
-
         Integer optionIndex;
         do {
             System.out.print("Type your answer number: ");
-            String value = s.nextLine();
+            String value = null;
+            try {
+                value = reader.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             optionIndex = typedValue2OptionIndex(value, optionsCount);
 
             if (optionIndex == null) {
