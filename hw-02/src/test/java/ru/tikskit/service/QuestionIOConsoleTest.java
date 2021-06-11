@@ -31,7 +31,7 @@ public class QuestionIOConsoleTest {
 
     @DisplayName("Проверяем, что запрос значения будет несколько раз, до тех пор, пока пользователь не введет корректное значение")
     @Test
-    public void xxx() throws Exception{
+    public void checkCorrectUserInput() throws Exception{
 
         when(reader.readLine()).thenReturn("", "-1", "4", "1");
 
