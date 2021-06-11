@@ -1,23 +1,38 @@
 package ru.tikskit.service;
 
+import org.springframework.stereotype.Service;
+import ru.tikskit.domain.GameResult;
 import ru.tikskit.domain.Option;
 import ru.tikskit.domain.Question;
 
-public class GameProcessorImpl implements GameProcessor {
-    private final GameDataProvider gameDataProvider;
+import java.util.Scanner;
 
-    public GameProcessorImpl(GameDataProvider gameDataProvider) {
-        this.gameDataProvider = gameDataProvider;
+
+@Service
+public class GameProcessorImpl implements GameProcessor {
+    private final GameScenario gameScenario;
+
+    public GameProcessorImpl(GameScenario gameScenario) {
+        this.gameScenario = gameScenario;
     }
 
     @Override
     public void play() {
-        for (Question q: gameDataProvider.getQuestions()) {
-            System.out.println(String.format("Question: %s", q.getText()));
-            for (Option o : q.getOptions()) {
-                System.out.println(String.format("\tOption: %s", o.getText()));
+        PlayerInfo pi = askPlayerInfo();
 
-            }
-        }
+        GameResult gameResult = gameScenario.askQuestions();
+
+    }
+
+    private PlayerInfo askPlayerInfo() {
+        System.out.print("Enter user name: ");
+        Scanner s = new Scanner(System.in);
+        String name = s.nextLine();
+
+        System.out.print("Enter user surname: ");
+        String surname = s.nextLine();
+
+
+        return new PlayerInfo(name, surname);
     }
 }
