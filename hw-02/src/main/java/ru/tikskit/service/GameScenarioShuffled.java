@@ -1,6 +1,7 @@
 package ru.tikskit.service;
 
 import org.springframework.stereotype.Service;
+import ru.tikskit.domain.Option;
 import ru.tikskit.domain.Question;
 import ru.tikskit.domain.GameResult;
 import ru.tikskit.domain.QuestionResult;
@@ -8,6 +9,7 @@ import ru.tikskit.domain.QuestionResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 
 /**
  * Сценарий игры, при котором вопросы просто задаются в рандомном порядке по одному разу. Игра заканчивается,
@@ -40,7 +42,12 @@ class GameScenarioShuffled implements GameScenario {
 
 
     private QuestionResult askQuestion(Question question) {
-        int optionIndex = questionIO.askQuestion(question);
-        return new QuestionResult(question, question.getOptions().get(optionIndex));
+        List<Option> shuffledOptions = new ArrayList<>(question.getOptions());
+        Collections.shuffle(shuffledOptions);
+
+        String[] shuffledOptionTexts = shuffledOptions.stream().map(Option::getText).toArray(String[]::new);
+        int index = questionIO.askQuestion(question.getText(), shuffledOptionTexts);
+
+        return new QuestionResult(question, shuffledOptions.get(index));
     }
 }

@@ -21,7 +21,7 @@ public class GameDataProviderImpl implements GameDataProvider{
             List<Option> options = Arrays.stream(line, 1, line.length).
                     map(Option::new).
                     collect(Collectors.toList());
-            questions.add(new Question(line[0], options, 0));
+            questions.add(new Question(line[0], options, options.get(0)));
         }
     }
 

@@ -10,6 +10,11 @@ public class QuestionResult {
     public QuestionResult(Question question, Option chosen) {
         Objects.requireNonNull(question, "Question can't be null");
         Objects.requireNonNull(chosen, "Option can't be null");
+
+        if (!question.getOptions().contains(chosen)) {
+            throw new IllegalArgumentException("Option is\'t from the list");
+        }
+
         this.question = question;
         this.chosen = chosen;
         this.isCorrect = question.isCorrectAnswer(chosen);

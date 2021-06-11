@@ -9,13 +9,13 @@ import java.util.Objects;
 public class Question {
     private final String text;
     private final List<Option> options;
-    private final int correctOptionIndex;
+    private final Option correctOption;
 
 
-    public Question(String text, List<Option> options, int correctOptionIndex) {
+    public Question(String text, List<Option> options, Option correctOption) {
         Objects.requireNonNull(text);
         Objects.requireNonNull(options);
-        Objects.checkIndex(correctOptionIndex, options.size());
+        Objects.requireNonNull(correctOption);
 
         if (text.trim().equals("")) {
             throw new IllegalArgumentException("Empty question text");
@@ -24,9 +24,13 @@ public class Question {
             throw new IllegalArgumentException("Empty options list");
         }
 
+        if (!options.contains(correctOption)) {
+            throw new IllegalArgumentException("The correct option is not in the options list");
+        }
+
         this.text = text;
         this.options = List.copyOf(options); // Чтобы изменение списка в вызывающем коде не повлияло на согласованность объекта
-        this.correctOptionIndex = correctOptionIndex;
+        this.correctOption = correctOption;
     }
 
     public String getText() {
@@ -38,21 +42,7 @@ public class Question {
     }
 
     public boolean isCorrectAnswer(Option test) {
-        return options.get(correctOptionIndex).matchesValue(test);
+        return correctOption.matchesValue(test);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Question question = (Question) o;
-        return correctOptionIndex == question.correctOptionIndex &&
-                text.equals(question.text) &&
-                options.equals(question.options);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(text, options, correctOptionIndex);
-    }
 }
