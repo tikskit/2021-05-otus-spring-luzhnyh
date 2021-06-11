@@ -49,7 +49,7 @@ class QuestionIOConsole implements QuestionIO {
             optionIndex = typedValue2OptionIndex(value, optionsCount);
 
             if (optionIndex == null) {
-                out.println(String.format("Can't accept the answer: \'%s\'! Try again", value));
+                out.println(String.format("Can't accept the answer: '%s'! Try again", value));
             }
 
         } while (optionIndex == null);

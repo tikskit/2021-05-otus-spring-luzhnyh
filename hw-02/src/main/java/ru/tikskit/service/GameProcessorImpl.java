@@ -3,6 +3,7 @@ package ru.tikskit.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.tikskit.domain.GameResult;
+import ru.tikskit.domain.PlayerInfo;
 import ru.tikskit.domain.QuestionResult;
 
 import java.io.InputStream;

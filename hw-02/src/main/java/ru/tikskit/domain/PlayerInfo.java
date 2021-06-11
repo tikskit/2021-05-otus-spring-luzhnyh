@@ -1,6 +1,6 @@
-package ru.tikskit.service;
+package ru.tikskit.domain;
 
-class PlayerInfo {
+public class PlayerInfo {
     private final String name;
     private final String surname;
 
