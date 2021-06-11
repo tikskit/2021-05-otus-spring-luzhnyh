@@ -33,21 +33,9 @@ public class GameDataProviderImpl implements GameDataProvider{
         return questions;
     }
 
-    private static List<String[]> readGameDataFromFile(String csvFileName) throws Exception {
-        QuestionsFileReader r = new QuestionsFileReaderImpl(csvFileName);
-        return r.readCsv();
-    }
-
     private static List<Question> loadQuestions(String fileName) throws Exception {
-        List<String[]> csvContent = readGameDataFromFile(fileName);
-        List<Question> questions = new ArrayList<>();
-        for (String[] line : csvContent) {
-            List<Option> options = Arrays.stream(line, 1, line.length).
-                    map(Option::new).
-                    collect(Collectors.toList());
-            questions.add(new Question(line[0], options, options.get(0)));
-        }
-        return questions;
+        QuestionsFileReader r = new QuestionsFileReaderImpl(fileName);
+        return r.loadQuestions();
     }
 
 }
