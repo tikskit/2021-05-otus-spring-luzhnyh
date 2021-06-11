@@ -1,28 +1,19 @@
 package ru.tikskit.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.tikskit.domain.GameResult;
 import ru.tikskit.domain.PlayerInfo;
 import ru.tikskit.domain.QuestionResult;
 
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.Scanner;
 
 
 @Service
 public class GameProcessorImpl implements GameProcessor {
     private final GameScenario gameScenario;
-    private final InputStream in;
-    private final PrintStream out;
 
-    public GameProcessorImpl(GameScenario gameScenario,
-                             @Value("#{T(java.lang.System).in}") InputStream in,
-                             @Value("#{T(java.lang.System).out}") PrintStream out) {
+    public GameProcessorImpl(GameScenario gameScenario) {
         this.gameScenario = gameScenario;
-        this.in = in;
-        this.out = out;
     }
 
     @Override
@@ -34,11 +25,11 @@ public class GameProcessorImpl implements GameProcessor {
     }
 
     private PlayerInfo askPlayerInfo() {
-        out.print("Enter user name: ");
-        Scanner s = new Scanner(in);
+        System.out.print("Enter user name: ");
+        Scanner s = new Scanner(System.in);
         String name = s.nextLine();
 
-        out.print("Enter user surname: ");
+        System.out.print("Enter user surname: ");
         String surname = s.nextLine();
 
 
@@ -47,6 +38,6 @@ public class GameProcessorImpl implements GameProcessor {
 
     private void printResult(PlayerInfo pi, GameResult gameResult) {
         long score = gameResult.getResults().stream().map(QuestionResult::isCorrect).filter(m -> m).count();
-        out.println(String.format("%s scores %d out of %d points", pi, score, gameResult.getResults().size()));
+        System.out.println(String.format("%s scores %d out of %d points", pi, score, gameResult.getResults().size()));
     }
 }
