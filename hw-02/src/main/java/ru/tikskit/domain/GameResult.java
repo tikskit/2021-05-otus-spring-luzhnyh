@@ -3,6 +3,7 @@ package ru.tikskit.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class GameResult {
     private final List<QuestionResult> results = new ArrayList<>();
@@ -36,6 +37,14 @@ public class GameResult {
         }
 
         return false;
+    }
+
+    public int questionsCount() {
+        return results.size();
+    }
+
+    public int correctAnswerCount() {
+        return (int) results.stream().filter(QuestionResult::isCorrect).count();
     }
 
 }
