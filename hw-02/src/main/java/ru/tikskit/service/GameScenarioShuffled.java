@@ -20,11 +20,14 @@ import java.util.List;
 class GameScenarioShuffled implements GameScenario {
 
     private final GameDataProvider gameDataProvider;
-    private final QuestionIO questionIO;
+    private final QuestionOutput questionOutput;
+    private final QuestionAnswerRequest questionAnswerRequest;
 
-    public GameScenarioShuffled(GameDataProvider gameDataProvider, QuestionIO questionIO) {
+    public GameScenarioShuffled(GameDataProvider gameDataProvider, QuestionOutput questionOutput,
+                                QuestionAnswerRequest questionAnswerRequest) {
         this.gameDataProvider = gameDataProvider;
-        this.questionIO = questionIO;
+        this.questionOutput = questionOutput;
+        this.questionAnswerRequest = questionAnswerRequest;
     }
 
     @Override
@@ -46,7 +49,8 @@ class GameScenarioShuffled implements GameScenario {
         Collections.shuffle(shuffledOptions);
 
         String[] shuffledOptionTexts = shuffledOptions.stream().map(Option::getText).toArray(String[]::new);
-        int index = questionIO.askQuestion(question.getText(), shuffledOptionTexts);
+        questionOutput.printQuestion(question.getText(), shuffledOptionTexts);
+        int index = questionAnswerRequest.requestAnswerNo(shuffledOptionTexts.length);
 
         return new QuestionResult(question, shuffledOptions.get(index));
     }

@@ -1,45 +1,34 @@
 package ru.tikskit.service;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Objects;
-
+import java.io.PrintStream;
 
 @Service
-class QuestionIOConsole implements QuestionIO {
+public class QuestionAnswerRequestConsole implements QuestionAnswerRequest {
+    public static final String REQUEST_MESSAGE = "Type your answer number: ";
+    public static final String WRONG_INPUT_TEMPLATE = "Can't accept the answer: '%s'! Try again";
 
     private final BufferedReader reader;
+    private final PrintStream out;
 
-    public QuestionIOConsole(
+    public QuestionAnswerRequestConsole(
             @Value("#{new java.io.BufferedReader(new java.io.InputStreamReader(T(java.lang.System).in))}")
-                    BufferedReader reader) {
+                    BufferedReader reader,
+            @Value("#{T(java.lang.System).out}") PrintStream out) {
         this.reader = reader;
+        this.out = out;
     }
 
     @Override
-    public int askQuestion(String questionText, String[] options) {
-        Objects.requireNonNull(questionText);
-        Objects.requireNonNull(options);
-
-        printQuestion(questionText, options);
-        return getUserAnswer(options.length);
-    }
-
-    private void printQuestion(String questionText, String[] options) {
-        System.out.println(questionText);
-
-        for (int i = 0; i < options.length; i++) {
-            System.out.println(String.format("%d. %s", i + 1, options[i]));
-        }
-    }
-
-    private int getUserAnswer(int optionsCount) {
+    public int requestAnswerNo(int optionsCount) {
         Integer optionIndex;
         do {
-            System.out.print("Type your answer number: ");
+            out.print(REQUEST_MESSAGE);
             String value = null;
             try {
                 value = reader.readLine();
@@ -49,13 +38,12 @@ class QuestionIOConsole implements QuestionIO {
             optionIndex = typedValue2OptionIndex(value, optionsCount);
 
             if (optionIndex == null) {
-                System.out.println(String.format("Can't accept the answer: '%s'! Try again", value));
+                out.println(String.format(WRONG_INPUT_TEMPLATE, value));
             }
 
         } while (optionIndex == null);
         return optionIndex;
     }
-
     private static Integer typedValue2OptionIndex(String value, int optionsCount) {
         int index;
 
