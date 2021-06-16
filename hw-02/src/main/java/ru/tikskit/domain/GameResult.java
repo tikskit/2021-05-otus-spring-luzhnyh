@@ -3,7 +3,6 @@ package ru.tikskit.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 public class GameResult {
     private final List<QuestionResult> results = new ArrayList<>();
@@ -13,7 +12,7 @@ public class GameResult {
         Objects.requireNonNull(result);
 
         if (questionPresents(result)) {
-            throw new IllegalArgumentException("The question result is in the list already");
+            throw new GameResultException("The question result is in the list already");
         }
 
         results.add(result);
