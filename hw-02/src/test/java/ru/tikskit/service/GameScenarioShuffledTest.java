@@ -47,7 +47,8 @@ public class GameScenarioShuffledTest {
         Properties props = getProperties();
 
 
-        GameDataProvider gameDataProvider = new GameDataProviderImpl((String)props.get(QUESTIONS_FILE_PATH));
+        QuestionsFileReader questionsFileReader = new QuestionsFileReaderImpl((String)props.get(QUESTIONS_FILE_PATH));
+        GameDataProvider gameDataProvider = new GameDataProviderImpl(questionsFileReader);
         QuestionOutput questionOutput = new QuestionOutputConsole(out);
         QuestionAnswerRequest questionAnswerRequest = new QuestionAnswerRequestConsole(reader, out);
         gameScenario = new GameScenarioShuffled(gameDataProvider, questionOutput, questionAnswerRequest);

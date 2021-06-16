@@ -1,6 +1,9 @@
 package ru.tikskit.service;
 
 import com.opencsv.CSVReader;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 import ru.tikskit.domain.Option;
 import ru.tikskit.domain.Question;
 
@@ -12,10 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
+@PropertySource("classpath:/application.properties")
 class QuestionsFileReaderImpl implements QuestionsFileReader {
     private final String csvFileName;
 
-    public QuestionsFileReaderImpl(String csvFileName) {
+    public QuestionsFileReaderImpl(@Value("${questions.file.path}") String csvFileName) {
         this.csvFileName = csvFileName;
     }
 
