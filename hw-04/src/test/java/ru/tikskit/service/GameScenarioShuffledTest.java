@@ -116,16 +116,22 @@ public class GameScenarioShuffledTest {
     private static List<Question> createQuestionsFake(ComfyLocalizer localizer) {
         List<Question> res = new ArrayList<>();
 
-        res.add(createQuestionFake("Question1", 0, "Option1.1", "Option1.2"));
-        res.add(createQuestionFake("Question2", 1, "Option2.1", "Option2.2"));
+        res.add(createQuestionFake("Question1", 0, localizer, "Option1.1",
+                "Option1.2"));
+        res.add(createQuestionFake("Question2", 1, localizer, "Option2.1",
+                "Option2.2"));
 
         return res;
     }
 
-    private static Question createQuestionFake(String questionText, int correctOptionNo, String... options) {
+    private static Question createQuestionFake(String questionText, int correctOptionNo, ComfyLocalizer localizer,
+                                               String... options) {
         Objects.checkIndex(correctOptionNo, options.length);
 
-        List<Option> optionList = Arrays.stream(options).map(Option::new).collect(Collectors.toList());
-        return new Question(questionText, optionList, optionList.get(correctOptionNo));
+        List<Option> optionList = Arrays.stream(options).
+                map(localizer::getMessage).
+                map(Option::new).
+                collect(Collectors.toList());
+        return new Question(localizer.getMessage(questionText), optionList, optionList.get(correctOptionNo));
     }
 }

@@ -1,6 +1,7 @@
 questions:
   filepath: /questions.csv
+localization:
+  localeTag:
 spring:
   messages:
-    basename: introduce,gameplay,gameresult,questions
-    use-code-as-default-message: true
+    basename: introduce,gameplay,gameresult,questions,fakequestions

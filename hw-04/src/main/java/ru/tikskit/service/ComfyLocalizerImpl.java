@@ -2,6 +2,7 @@ package ru.tikskit.service;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import ru.tikskit.config.LocalizationConfig;
 
 import java.util.Locale;
 
@@ -9,9 +10,11 @@ import java.util.Locale;
 public class ComfyLocalizerImpl implements ComfyLocalizer {
 
     private final MessageSource msg;
+    private final LocalizationConfig config;
 
-    public ComfyLocalizerImpl(MessageSource msg) {
+    public ComfyLocalizerImpl(MessageSource msg, LocalizationConfig config) {
         this.msg = msg;
+        this.config = config;
     }
 
     @Override
@@ -25,6 +28,6 @@ public class ComfyLocalizerImpl implements ComfyLocalizer {
     }
 
     private Locale getLocale() {
-        return Locale.forLanguageTag("ru-RU");
+        return Locale.forLanguageTag(config.getLocaleTag());
     }
 }
