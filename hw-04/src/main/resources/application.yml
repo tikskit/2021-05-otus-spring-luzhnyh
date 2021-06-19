@@ -1,0 +1,7 @@
+questions:
+  filepath: /questions.csv
+spring:
+  messages:
+    basename: messages
+    encoding: utf-8
+    use-code-as-default-message: false
