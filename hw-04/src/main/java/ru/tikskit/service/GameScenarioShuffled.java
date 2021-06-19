@@ -22,12 +22,14 @@ class GameScenarioShuffled implements GameScenario {
     private final GameDataProvider gameDataProvider;
     private final QuestionOutput questionOutput;
     private final QuestionAnswerRequest questionAnswerRequest;
+    private final ComfyLocalizer localizer;
 
     public GameScenarioShuffled(GameDataProvider gameDataProvider, QuestionOutput questionOutput,
-                                QuestionAnswerRequest questionAnswerRequest) {
+                                QuestionAnswerRequest questionAnswerRequest, ComfyLocalizer localizer) {
         this.gameDataProvider = gameDataProvider;
         this.questionOutput = questionOutput;
         this.questionAnswerRequest = questionAnswerRequest;
+        this.localizer = localizer;
     }
 
     @Override
@@ -48,8 +50,12 @@ class GameScenarioShuffled implements GameScenario {
         List<Option> shuffledOptions = new ArrayList<>(question.getOptions());
         Collections.shuffle(shuffledOptions);
 
-        String[] shuffledOptionTexts = shuffledOptions.stream().map(Option::getText).toArray(String[]::new);
-        questionOutput.printQuestion(question.getText(), shuffledOptionTexts);
+        String[] shuffledOptionTexts = shuffledOptions.stream().
+                map(Option::getText).
+                map(localizer::getMessage).
+                toArray(String[]::new);
+
+        questionOutput.printQuestion(localizer.getMessage(question.getText()), shuffledOptionTexts);
         int index = questionAnswerRequest.requestAnswerNo(shuffledOptionTexts.length);
 
         return new QuestionResult(question, shuffledOptions.get(index));

@@ -2,4 +2,4 @@ questions:
   filepath: /questions.csv
 spring:
   messages:
-    basename: introduce,gameplay,gameresult
+    basename: introduce,gameplay,gameresult,questions
