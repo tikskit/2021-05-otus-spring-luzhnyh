@@ -1,0 +1,6 @@
+questions:
+  filepath: /questions.csv
+spring:
+  messages:
+    basename: introduce,gameplay,gameresult,questions
+    use-code-as-default-message: true

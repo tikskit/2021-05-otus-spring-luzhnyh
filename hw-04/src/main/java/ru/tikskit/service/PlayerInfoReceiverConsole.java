@@ -12,8 +12,8 @@ import java.io.PrintStream;
 @Service
 class PlayerInfoReceiverConsole implements PlayerInfoReceiver{
 
-    private static final String ENTER_PLAYER_NAME_CODE = "enter_player_name";
-    private static final String ENTER_PLAYER_SURNAME_CODE = "enter_player_surname";
+    public static final String ENTER_PLAYER_NAME_CODE = "enter_player_name";
+    public static final String ENTER_PLAYER_SURNAME_CODE = "enter_player_surname";
 
     private final BufferedReader reader;
     public final PrintStream out;
