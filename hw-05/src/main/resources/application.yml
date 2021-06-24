@@ -1,0 +1,7 @@
+questions:
+  filepath: /questions.csv
+localization:
+  localeTag: ru-RU
+spring:
+  messages:
+    basename: introduce,gameplay,gameresult,questions
