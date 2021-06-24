@@ -9,8 +9,9 @@ import ru.tikskit.service.GameProcessor;
 public class QuizApplication05 {
 
 	public static void main(String[] args) {
-		ApplicationContext context = SpringApplication.run(QuizApplication05.class, args);
-		GameProcessor gameProcessor = context.getBean(GameProcessor.class);
-		gameProcessor.play();
+		SpringApplication.run(QuizApplication05.class, args);
+//		ApplicationContext context = SpringApplication.run(QuizApplication05.class, args);
+//		GameProcessor gameProcessor = context.getBean(GameProcessor.class);
+//		gameProcessor.play();
 	}
 }

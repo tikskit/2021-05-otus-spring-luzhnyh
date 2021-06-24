@@ -7,21 +7,24 @@ import ru.tikskit.domain.PlayerInfo;
 @Service
 public class GameProcessorImpl implements GameProcessor {
     private final GameScenario gameScenario;
-    private final PlayerInfoReceiver playerInfoReceiver;
     private final GameResultOutput gameResultOutput;
+    private final LoginedPlayedInfo loginedPlayedInfo;
 
-    public GameProcessorImpl(GameScenario gameScenario, PlayerInfoReceiver playerInfoReceiver,
+    public GameProcessorImpl(GameScenario gameScenario, LoginedPlayedInfo loginedPlayedInfo,
                              GameResultOutput gameResultOutput) {
         this.gameScenario = gameScenario;
-        this.playerInfoReceiver = playerInfoReceiver;
+        this.loginedPlayedInfo = loginedPlayedInfo;
         this.gameResultOutput = gameResultOutput;
     }
 
     @Override
-    public void play() {
-        PlayerInfo pi = playerInfoReceiver.get();
-
-        GameResult gameResult = gameScenario.askQuestions();
-        gameResultOutput.showResult(pi, gameResult);
+    public boolean play() {
+        if (loginedPlayedInfo.isPlayerLogined()) {
+            GameResult gameResult = gameScenario.askQuestions();
+            gameResultOutput.showResult(loginedPlayedInfo.getPlayerInfo(), gameResult);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.tikskit.config.QuestionsConfig;
 import ru.tikskit.domain.GameResult;
 import ru.tikskit.domain.Option;
@@ -33,9 +34,17 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class GameScenarioShuffledTest {
 
+    @MockBean
     private BufferedReader reader;
     private GameScenario gameScenario;
+    @MockBean
     private PrintStream out;
+    @MockBean
+    GameDataProvider gameDataProvider;
+    @MockBean
+    QuestionOutput questionOutput;
+    @MockBean
+    QuestionAnswerRequest questionAnswerRequest;
 
     @Autowired
     private QuestionsConfig questionsConfig;
@@ -55,9 +64,6 @@ public class GameScenarioShuffledTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        reader = mock(BufferedReader.class);
-        out = mock(PrintStream.class);
-
         when(reader.readLine()).thenReturn("1", "1");
 
         QuestionsFileReader questionsFileReader = new QuestionsFileReaderImpl(questionsConfig);
@@ -77,8 +83,6 @@ public class GameScenarioShuffledTest {
     @DisplayName("Проверка использования методов QuestionOutput")
     @Test
     public void checkQuestionOutput() {
-        GameDataProvider gameDataProvider = mock(GameDataProviderImpl.class);
-        QuestionOutput questionOutput = mock(QuestionOutputConsole.class);
         QuestionAnswerRequest questionAnswerRequest = new QuestionAnswerRequestConsole(reader, out, localizer);
         GameScenario gameScenario = new GameScenarioShuffled(gameDataProvider, questionOutput, questionAnswerRequest,
                 localizer);
@@ -98,9 +102,7 @@ public class GameScenarioShuffledTest {
     @DisplayName("Проверка использования методов QuestionAnswerRequest")
     @Test
     public void checkQuestionAnswerRequest() {
-        GameDataProvider gameDataProvider = mock(GameDataProviderImpl.class);
         QuestionOutput questionOutput = new QuestionOutputConsole(out);
-        QuestionAnswerRequest questionAnswerRequest = mock(QuestionAnswerRequestConsole.class);
         GameScenario gameScenario = new GameScenarioShuffled(gameDataProvider, questionOutput, questionAnswerRequest,
                 localizer);
 

@@ -5,13 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +19,9 @@ import static org.mockito.Mockito.when;
 @DisplayName("Тесты для класса QuestionAnswerRequestConsole")
 @SpringBootTest
 public class QuestionAnswerRequestConsoleTest {
+    @MockBean
     private BufferedReader reader;
+    @MockBean
     private PrintStream out;
     private QuestionAnswerRequest questionAnswerRequest;
 
@@ -28,9 +30,6 @@ public class QuestionAnswerRequestConsoleTest {
 
     @BeforeEach
     public void setUp() {
-        reader = mock(BufferedReader.class);
-        out = mock(PrintStream.class);
-
         questionAnswerRequest = new QuestionAnswerRequestConsole(reader, out, localizer);
     }
 

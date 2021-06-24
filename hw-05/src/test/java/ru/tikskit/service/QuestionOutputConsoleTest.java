@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.PrintStream;
 
@@ -15,12 +16,12 @@ import static org.mockito.Mockito.verify;
 @DisplayName("Тесты для класса QuestionOutputConsole")
 @SpringBootTest
 public class QuestionOutputConsoleTest {
+    @MockBean
     private PrintStream out;
     private QuestionOutputConsole questionOutputConsole;
 
     @BeforeEach
     public void setUp() {
-        out = mock(PrintStream.class);
         questionOutputConsole = new QuestionOutputConsole(out);
     }
 
