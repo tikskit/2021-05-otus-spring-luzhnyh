@@ -41,7 +41,7 @@ class AuthorDaoJdbcTest {
 
     @DisplayName("выбрасывать исключение при попытке вставить одного автора два раза")
     @Test
-    public void throwsExceptionWhenUniqueAuthorConstraintIsBroken() {
+    public void throwsExceptionWhenUniqueAuthorConstraintIsViolated() {
         authorDao.insert(new Author(0, "Васильев", "Владимир"));
         Author again = new Author(0, "Васильев", "Владимир");
 
@@ -68,7 +68,7 @@ class AuthorDaoJdbcTest {
         List<Author> actualAuthors = authorDao.getAll();
         assertThat(actualAuthors).
                 extracting("surname", "name").
-                as("check that exist only genres we've just added").
+                as("check that only genres we've just added exist").
                 containsExactlyInAnyOrderElementsOf(expectedTuples);
     }
 
