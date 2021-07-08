@@ -24,21 +24,25 @@ databaseChangeLog:
             type: bigint
             constraints:
               nullable: false
-              references:
-                foreignKeyName: fk_book_genre
-                deleteCascade: true
-                referencedColumnNames: id
-                referencedTableName: genres
+              references: genres(id)
+              foreignKeyName: fk_book_genre
+              deleteCascade: true
+              referencedColumnNames: id
+              referencedTableName: genres
+              validateForeignKey: true
+              checkConstraint: true
         - column:
             name: author_id
             type: bigint
             constraints:
               nullable: false
-              references:
-                foreignKeyName: fk_book_author
-                deleteCascade: true
-                referencedColumnNames: id
-                referencedTableName: authors
+              references: authors(id)
+              foreignKeyName: fk_book_author
+              deleteCascade: true
+              referencedColumnNames: id
+              referencedTableName: authors
+              validateForeignKey: true
+              checkConstraint: true
     addUniqueConstraint:
       tableName: books
       columnNames: author_id, name

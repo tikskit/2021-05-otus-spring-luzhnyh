@@ -6,3 +6,6 @@ spring:
       enabled: true
   liquibase:
     enabled: true
+  shell:
+    interactive:
+      enabled: true

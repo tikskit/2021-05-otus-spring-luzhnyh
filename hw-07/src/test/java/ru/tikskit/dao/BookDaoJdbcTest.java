@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Dao для работы с книгами должно")
 @JdbcTest
@@ -93,6 +92,7 @@ class BookDaoJdbcTest {
         assertThatThrownBy(() -> bookDao.insert(again)).
                 as("check unique books constraints").
                 isInstanceOf(RuntimeException.class);
+
     }
 
     @DisplayName("вернуть все книги из таблицы books")
@@ -192,6 +192,34 @@ class BookDaoJdbcTest {
                 as("check deleted book disappeared").
                 extracting("id").
                 doesNotContain(deletedBook);
+    }
+
+    @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_genre")
+    @Test
+    public void throwsExceptionWhenFKBookGenreViolated() {
+
+        Author vasilyev = new Author(0, "Васильев", "Владимир");
+        authorDao.insert(vasilyev);
+
+        Book book = new Book(0, "Черная эстафета", 0, vasilyev.getId());
+        assertThatThrownBy(() -> bookDao.insert(book)).
+                as("check exception is throw when fk_book_genre is violated").
+                isInstanceOf(RuntimeException.class);
+
+    }
+
+    @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_author")
+    @Test
+    public void throwsExceptionWhenFKBookAuthorViolated() {
+
+        Genre sciFi = new Genre(0, "sci-fi");
+        genreDao.insert(sciFi);
+
+        Book book = new Book(0, "Черная эстафета", sciFi.getId(), 0);
+        assertThatThrownBy(() -> bookDao.insert(book)).
+                as("check exception is throw when fk_book_author is violated").
+                isInstanceOf(RuntimeException.class);
+
     }
 
 }
