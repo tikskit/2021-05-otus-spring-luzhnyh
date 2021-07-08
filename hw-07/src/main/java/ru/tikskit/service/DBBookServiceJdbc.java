@@ -33,10 +33,21 @@ public class DBBookServiceJdbc implements DBBookService {
     }
 
     @Override
-    public void saveBook(Book book) {
+    public void addBook(Book book) {
         try {
             bookDao.insert(book);
             logger.info("Book added {}", book);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void changeBook(Book book) {
+        try {
+            bookDao.update(book);
+            logger.info("Book updated {}", book);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

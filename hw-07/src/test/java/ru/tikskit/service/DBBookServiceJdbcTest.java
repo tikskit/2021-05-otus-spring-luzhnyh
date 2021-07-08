@@ -56,19 +56,19 @@ class DBBookServiceJdbcTest {
         dbGenreService.saveGenre(fantasy);
 
         blackRelay = new Book(0, "Черная эстафета", sciFi.getId(), vasilyev.getId());
-        dbBookService.saveBook(blackRelay);
+        dbBookService.addBook(blackRelay);
         darkness = new Book(0, "Тьма", fantasy.getId(), lukyanenko.getId());
-        dbBookService.saveBook(darkness);
+        dbBookService.addBook(darkness);
     }
 
     @DisplayName("добавлять одну и только одну книгу")
     @Test
-    public void saveBookShouldAddOnlyOneBook(){
+    public void addBookShouldAddOnlyOneBook(){
 
         List<Book> before = dbBookService.getAll();
 
         Book americanGods = new Book(0, "Американские боги", fantasy.getId(), gaiman.getId());
-        dbBookService.saveBook(americanGods);
+        dbBookService.addBook(americanGods);
 
         List<Book> now = dbBookService.getAll();
 
@@ -96,9 +96,9 @@ class DBBookServiceJdbcTest {
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
-    @DisplayName("праивльно удалять книги из БД")
+    @DisplayName("правильно удалять книги из БД")
     @Test
-    public void endityDisappearsWhenItDeleted() {
+    public void entityDisappearsWhenItDeleted() {
         List<Book> before = dbBookService.getAll();
 
         dbBookService.deleteBook(darkness.getId());
@@ -109,5 +109,17 @@ class DBBookServiceJdbcTest {
         expected.remove(darkness);
 
         assertThat(after).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @DisplayName("правильно изменять книги в БД")
+    @Test
+    public void bookChangedProperly() {
+        Book blackRelayChanged = new Book(blackRelay.getId(), "Очень черная эстафета", fantasy.getId(),
+                lukyanenko.getId());
+
+        dbBookService.changeBook(blackRelayChanged);
+
+        Optional<Book> blackRelayActual = dbBookService.getBook(blackRelay.getId());
+        assertThat(blackRelayActual.orElseGet(null)).usingRecursiveComparison().isEqualTo(blackRelayChanged);
     }
 }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.tikskit.domain.Book;
-import ru.tikskit.domain.Genre;
 import ru.tikskit.service.DBBookService;
 import ru.tikskit.service.Output;
 
@@ -30,7 +29,7 @@ public class BookShellCommands {
     @ShellMethod(value = "Add book command", key = {"book add", "b add"})
     public void addBook(String name, long genreId, long authorId) {
         Book book = new Book(0, name, genreId, authorId);
-        dbBookService.saveBook(book);
+        dbBookService.addBook(book);
         output.println(String.format("New book was added: %s", book));
     }
 
@@ -45,5 +44,10 @@ public class BookShellCommands {
     @ShellMethod(value = "Delete book", key = {"book del", "b del"})
     public void deleteBook(long id) {
         dbBookService.deleteBook(id);
+    }
+
+    @ShellMethod(value = "Change book", key = {"book change", "b change"})
+    public void changeBook(long id, String name, long genreId, long authorId) {
+        dbBookService.changeBook(new Book(id, name, genreId, authorId));
     }
 }

@@ -9,7 +9,9 @@ public interface DBBookService {
 
     Optional<Book> getBook(long id);
 
-    void saveBook(Book book);
+    void addBook(Book book);
+
+    void changeBook(Book book);
 
     void deleteBook(long id);
 
