@@ -22,6 +22,18 @@ class AuthorDaoJdbcTest {
     @Autowired
     private AuthorDaoJdbc authorDao;
 
+    @DisplayName("устанавливать идентификатор объекта при его сохранении в БД")
+    @Test
+    public void checkSavingAuthorSetsId() {
+        Author expected = new Author(0, "Васильев", "Владимир");
+        authorDao.insert(expected);
+
+        assertThat(expected.getId()).
+                as("check that id is assigned now").
+                isGreaterThan(0);
+
+    }
+
     @DisplayName("добавлять методом insert одного автора")
     @Test
     public void insertShouldCreateOneAuthor() {
