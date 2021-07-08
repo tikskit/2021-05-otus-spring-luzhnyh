@@ -55,11 +55,10 @@ class BookDaoJdbcTest {
         authorDao.insert(author);
 
         Book book = new Book(0, "Черная эстафета", 100500, author.getId());
-        bookDao.insert(book);
 
         assertThatThrownBy(() -> bookDao.insert(book)).
                 as("check fk_book_genre").
-                isInstanceOf(RuntimeException.class);
+                isInstanceOf(Exception.class);
     }
 
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_author")
@@ -69,11 +68,10 @@ class BookDaoJdbcTest {
         genreDao.insert(genre);
 
         Book book = new Book(0, "Черная эстафета", genre.getId(), 100500);
-        bookDao.insert(book);
 
         assertThatThrownBy(() -> bookDao.insert(book)).
                 as("check fk_book_author").
-                isInstanceOf(RuntimeException.class);
+                isInstanceOf(Exception.class);
     }
 
     @DisplayName("выбрасывать исключение при попытке вставить одну и ту же книгу два раза")
@@ -91,7 +89,7 @@ class BookDaoJdbcTest {
 
         assertThatThrownBy(() -> bookDao.insert(again)).
                 as("check unique books constraints").
-                isInstanceOf(RuntimeException.class);
+                isInstanceOf(Exception.class);
 
     }
 
@@ -204,7 +202,7 @@ class BookDaoJdbcTest {
         Book book = new Book(0, "Черная эстафета", 0, vasilyev.getId());
         assertThatThrownBy(() -> bookDao.insert(book)).
                 as("check exception is throw when fk_book_genre is violated").
-                isInstanceOf(RuntimeException.class);
+                isInstanceOf(Exception.class);
 
     }
 
@@ -218,7 +216,7 @@ class BookDaoJdbcTest {
         Book book = new Book(0, "Черная эстафета", sciFi.getId(), 0);
         assertThatThrownBy(() -> bookDao.insert(book)).
                 as("check exception is throw when fk_book_author is violated").
-                isInstanceOf(RuntimeException.class);
+                isInstanceOf(Exception.class);
 
     }
 

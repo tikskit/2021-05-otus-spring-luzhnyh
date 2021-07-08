@@ -1,6 +1,5 @@
 package ru.tikskit.dao;
 
-import liquibase.pro.packaged.A;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.domain.Author;
-import ru.tikskit.domain.Genre;
 
 
 import java.util.ArrayList;
