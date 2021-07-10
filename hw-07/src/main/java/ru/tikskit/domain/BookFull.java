@@ -1,11 +1,14 @@
 package ru.tikskit.domain;
 
+import java.util.Objects;
+
 public class BookFull extends Book {
     private final Author author;
     private final Genre genre;
 
     public BookFull(long id, String name, Author author, Genre genre) {
-        super(id, name, author.getId(), genre.getId());
+        super(id, name, Objects.requireNonNull(author, "author is null").getId(),
+                Objects.requireNonNull(genre, "genre is null").getId());
 
         this.author = author;
         this.genre = genre;
