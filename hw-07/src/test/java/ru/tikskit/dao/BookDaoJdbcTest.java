@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookFull;
 import ru.tikskit.domain.Genre;
 
 import java.util.ArrayList;
@@ -30,14 +31,9 @@ class BookDaoJdbcTest {
     @DisplayName("добавлять методом insert одну книгу")
     @Test
     public void insertShouldCreateOneBook() {
-        Genre genre = new Genre(0, "sci-fi");
-        genreDao.insert(genre);
-
-        Author author = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(author);
-
-        Book expectedBook = new Book(0, "Черная эстафета", genre.getId(), author.getId());
-        bookDao.insert(expectedBook);
+        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Book expectedBook = bookDao.insert(new Book(0, "Черная эстафета", genre.getId(), author.getId()));
 
         assertThat(expectedBook.getId()).
                 as("check that id is assigned now").
@@ -51,8 +47,7 @@ class BookDaoJdbcTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreIsViolated() {
-        Author author = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(author);
+        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", 100500, author.getId());
 
@@ -64,8 +59,7 @@ class BookDaoJdbcTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorIsViolated() {
-        Genre genre = new Genre(0, "sci-fi");
-        genreDao.insert(genre);
+        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", genre.getId(), 100500);
 
@@ -77,12 +71,8 @@ class BookDaoJdbcTest {
     @DisplayName("выбрасывать исключение при попытке вставить одну и ту же книгу два раза")
     @Test
     public void throwsExceptionWhenUniqueAuthorConstraintIsViolated() {
-        Genre genre = new Genre(0, "sci-fi");
-        genreDao.insert(genre);
-
-        Author author = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(author);
-
+        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
 
         bookDao.insert(new Book(0, "Черная эстафета", genre.getId(), author.getId()));
         Book again = new Book(0, "Черная эстафета", genre.getId(), author.getId());
@@ -96,17 +86,11 @@ class BookDaoJdbcTest {
     @DisplayName("вернуть все книги из таблицы books")
     @Test
     public void shouldReturnAllBooks() {
-        Genre sciFi = new Genre(0, "sci-fi");
-        genreDao.insert(sciFi);
+        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Genre fantasy = new Genre(0, "fantasy");
-        genreDao.insert(fantasy);
-
-        Author vasilyev = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(vasilyev);
-
-        Author lukyanenko = new Author(0, "Лукьяненко", "Сергей");
-        authorDao.insert(lukyanenko);
+        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
 
         List<Book> expectedBooks = List.of(
                 new Book(0, "Черная эстафета", sciFi.getId(), vasilyev.getId()),
@@ -114,9 +98,7 @@ class BookDaoJdbcTest {
                 new Book(0, "Предел", fantasy.getId(), lukyanenko.getId())
         );
 
-        for (Book book : expectedBooks) {
-            bookDao.insert(book);
-        }
+        expectedBooks = insertAllBooks(expectedBooks);
 
         List<Tuple> expectedTuples = new ArrayList<>();
         for (Book book : expectedBooks) {
@@ -130,28 +112,27 @@ class BookDaoJdbcTest {
                 containsExactlyInAnyOrderElementsOf(expectedTuples);
     }
 
+    private List<Book> insertAllBooks(List<Book> list) {
+        List<Book> res = new ArrayList<>();
+        for (Book book : list) {
+            res.add(bookDao.insert(book));
+        }
+        return res;
+    }
 
     @DisplayName("фиксировать все изменения книги в БД")
     @Test
     public void updateShouldChangeAllFields() {
-        Genre sciFi = new Genre(0, "sci-fi");
-        genreDao.insert(sciFi);
+        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Genre fantasy = new Genre(0, "fantasy");
-        genreDao.insert(fantasy);
+        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
 
-        Author vasilyev = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(vasilyev);
-
-        Author lukyanenko = new Author(0, "Лукьяненко", "Сергей");
-        authorDao.insert(lukyanenko);
-
-        Book initBook = new Book(0, "Черная эстафета", sciFi.getId(), lukyanenko.getId());
-        bookDao.insert(initBook);
+        Book initBook = bookDao.insert(new Book(0, "Черная эстафета", sciFi.getId(), lukyanenko.getId()));
 
         Book updatedBook = new Book(initBook.getId(), "Предел", fantasy.getId(), lukyanenko.getId());
         bookDao.update(updatedBook);
-
 
         Book actualBook = bookDao.getById(initBook.getId());
         assertThat(actualBook).
@@ -163,28 +144,18 @@ class BookDaoJdbcTest {
     @DisplayName("удалять книги из таблицы books")
     @Test
     public void deletedBookShouldDisappearInDB() {
-        Genre sciFi = new Genre(0, "sci-fi");
-        genreDao.insert(sciFi);
+        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Genre fantasy = new Genre(0, "fantasy");
-        genreDao.insert(fantasy);
+        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
 
-        Author vasilyev = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(vasilyev);
-
-        Author lukyanenko = new Author(0, "Лукьяненко", "Сергей");
-        authorDao.insert(lukyanenko);
-
-        Book book1 = new Book(0, "Черная эстафета", sciFi.getId(), lukyanenko.getId());
-        bookDao.insert(book1);
-
-        Book deletedBook = new Book(0, "Предел", fantasy.getId(), lukyanenko.getId());
-        bookDao.insert(deletedBook);
+        bookDao.insert(new Book(0, "Черная эстафета", sciFi.getId(), lukyanenko.getId()));
+        Book deletedBook = bookDao.insert(new Book(0, "Предел", fantasy.getId(), lukyanenko.getId()));
 
         bookDao.deleteById(deletedBook.getId());
 
         List<Book> actualBooks = bookDao.getAll();
-
 
         assertThat(actualBooks).
                 as("check deleted book disappeared").
@@ -195,9 +166,7 @@ class BookDaoJdbcTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreViolated() {
-
-        Author vasilyev = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(vasilyev);
+        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", 0, vasilyev.getId());
         assertThatThrownBy(() -> bookDao.insert(book)).
@@ -209,15 +178,35 @@ class BookDaoJdbcTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorViolated() {
-
-        Genre sciFi = new Genre(0, "sci-fi");
-        genreDao.insert(sciFi);
+        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", sciFi.getId(), 0);
         assertThatThrownBy(() -> bookDao.insert(book)).
                 as("check exception is throw when fk_book_author is violated").
                 isInstanceOf(Exception.class);
 
+    }
+
+    @DisplayName("правильно выбирать книги с авторами и жанрами")
+    @Test
+    public void getAllFullShould() {
+        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
+
+        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
+
+        Book blackRelay = bookDao.insert(new Book(0, "Черная эстафета", sciFi.getId(), vasilyev.getId()));
+        Book darkness = bookDao.insert(new Book(0, "Тьма", fantasy.getId(), lukyanenko.getId()));
+
+        List<Book> test = bookDao.getAll();
+
+        List<BookFull> expected = List.of(new BookFull(darkness, lukyanenko, fantasy),
+                new BookFull(blackRelay, vasilyev, sciFi));
+
+        List<BookFull> actual = bookDao.getAllFull();
+
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
 }

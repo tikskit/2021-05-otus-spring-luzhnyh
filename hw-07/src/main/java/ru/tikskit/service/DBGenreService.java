@@ -9,7 +9,7 @@ public interface DBGenreService {
 
     Optional<Genre> getGenre(long id);
 
-    void saveGenre(Genre genre);
+    Genre saveGenre(Genre genre);
 
     List<Genre> getAll();
 

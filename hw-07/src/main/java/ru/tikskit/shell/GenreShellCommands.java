@@ -16,8 +16,6 @@ public class GenreShellCommands {
     private final DBGenreService dbGenreService;
     private final Output output;
 
-
-
     @ShellMethod(value = "Show all genres command", key = {"genre list", "g list"})
     public void listGenres() {
         List<Genre> genres = dbGenreService.getAll();
@@ -29,8 +27,7 @@ public class GenreShellCommands {
 
     @ShellMethod(value = "Add genre command", key = {"genre add", "g add"})
     public void addGenre(String name) {
-        Genre genre = new Genre(0, name);
-        dbGenreService.saveGenre(genre);
+        Genre genre = dbGenreService.saveGenre(new Genre(0, name));
         output.println(String.format("New genre was added: %s", genre));
     }
 

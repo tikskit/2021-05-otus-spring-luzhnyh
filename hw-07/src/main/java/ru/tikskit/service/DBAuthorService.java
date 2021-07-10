@@ -9,7 +9,7 @@ public interface DBAuthorService {
 
     Optional<Author> getAuthor(long id);
 
-    void saveAuthor(Author author);
+    Author saveAuthor(Author author);
 
     List<Author> getAll();
 }

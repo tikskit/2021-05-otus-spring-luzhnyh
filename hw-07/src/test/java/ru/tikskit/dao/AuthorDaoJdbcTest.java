@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.domain.Author;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +24,7 @@ class AuthorDaoJdbcTest {
     @DisplayName("устанавливать идентификатор объекта при его сохранении в БД")
     @Test
     public void checkSavingAuthorSetsId() {
-        Author expected = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(expected);
+        Author expected = authorDao.insert(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expected.getId()).
                 as("check that id is assigned now").
@@ -37,8 +35,7 @@ class AuthorDaoJdbcTest {
     @DisplayName("добавлять методом insert одного автора")
     @Test
     public void insertShouldCreateOneAuthor() {
-        Author expectedAuthor = new Author(0, "Васильев", "Владимир");
-        authorDao.insert(expectedAuthor);
+        Author expectedAuthor = authorDao.insert(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expectedAuthor.getId()).
                 as("check that id is assigned now").
@@ -63,12 +60,8 @@ class AuthorDaoJdbcTest {
     @DisplayName("возвращать всех авторов из таблицы authors")
     @Test
     public void getAllShouldReturnAllAuthors(){
-        List<Author> expectedAuthors = List.of(new Author(0, "Васильев", "Владимир"),
-                new Author(0, "Лукьяненко", "Сергей"));
-
-        for (Author author : expectedAuthors) {
-            authorDao.insert(author);
-        }
+        List<Author> expectedAuthors = insertAuthors(List.of(new Author(0, "Васильев", "Владимир"),
+                new Author(0, "Лукьяненко", "Сергей")));
 
         List<Tuple> expectedTuples = new ArrayList<>();
         for (Author author : expectedAuthors) {
@@ -80,6 +73,14 @@ class AuthorDaoJdbcTest {
                 extracting("surname", "name").
                 as("check that only genres we've just added exist").
                 containsExactlyInAnyOrderElementsOf(expectedTuples);
+    }
+
+    private List<Author> insertAuthors(List<Author> list) {
+        List<Author> res = new ArrayList<>();
+        for (Author author : list) {
+            res.add(authorDao.insert(author));
+        }
+        return res;
     }
 
 }

@@ -8,7 +8,7 @@ public interface GenreDao {
 
     Genre getById(long id);
 
-    void insert(Genre genre);
+    Genre insert(Genre genre);
 
     List<Genre> getAll();
 }

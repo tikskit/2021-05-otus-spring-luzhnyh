@@ -28,11 +28,8 @@ class DBAuthorServiceJdbcTest {
 
     @BeforeEach
     public void setUp() {
-        lukyanenko = new Author(0, "Лукьяненко", "Сергей");
-        dbAuthorService.saveAuthor(lukyanenko);
-
-        vasilyev = new Author(0, "Васильев", "Сергей");
-        dbAuthorService.saveAuthor(vasilyev);
+        lukyanenko = dbAuthorService.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
+        vasilyev = dbAuthorService.saveAuthor(new Author(0, "Васильев", "Сергей"));
     }
 
     @DisplayName("добавлять одного и только одного автора")
@@ -40,8 +37,7 @@ class DBAuthorServiceJdbcTest {
     public void saveAuthorShouldInsertOneAuthor() {
         List<Author> before = dbAuthorService.getAll();
 
-        Author gaiman = new Author(0, "Гейман", "Нил");
-        dbAuthorService.saveAuthor(gaiman);
+        Author gaiman = dbAuthorService.saveAuthor(new Author(0, "Гейман", "Нил"));
 
         List<Author> now = dbAuthorService.getAll();
 

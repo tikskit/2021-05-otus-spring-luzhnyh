@@ -11,6 +11,7 @@ import ru.tikskit.dao.BookDaoJdbc;
 import ru.tikskit.dao.GenreDaoJdbc;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookFull;
 import ru.tikskit.domain.Genre;
 
 import java.util.ArrayList;
@@ -43,22 +44,15 @@ class DBBookServiceJdbcTest {
 
     @BeforeEach
     public void setUp() {
-        lukyanenko = new Author(0, "Лукьяненко", "Сергей");
-        dbAuthorService.saveAuthor(lukyanenko);
-        vasilyev = new Author(0, "Васильев", "Сергей");
-        dbAuthorService.saveAuthor(vasilyev);
-        gaiman = new Author(0, "Гейман", "Нил");
-        dbAuthorService.saveAuthor(gaiman);
+        lukyanenko = dbAuthorService.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
+        vasilyev = dbAuthorService.saveAuthor(new Author(0, "Васильев", "Сергей"));
+        gaiman = dbAuthorService.saveAuthor(new Author(0, "Гейман", "Нил"));
 
-        sciFi = new Genre(0, "sci-fi");
-        dbGenreService.saveGenre(sciFi);
-        fantasy = new Genre(0, "fantasy");
-        dbGenreService.saveGenre(fantasy);
+        sciFi = dbGenreService.saveGenre(new Genre(0, "sci-fi"));
+        fantasy = dbGenreService.saveGenre(new Genre(0, "fantasy"));
 
-        blackRelay = new Book(0, "Черная эстафета", sciFi.getId(), vasilyev.getId());
-        dbBookService.addBook(blackRelay);
-        darkness = new Book(0, "Тьма", fantasy.getId(), lukyanenko.getId());
-        dbBookService.addBook(darkness);
+        blackRelay = dbBookService.addBook(new Book(0, "Черная эстафета", sciFi.getId(), vasilyev.getId()));
+        darkness = dbBookService.addBook(new Book(0, "Тьма", fantasy.getId(), lukyanenko.getId()));
     }
 
     @DisplayName("добавлять одну и только одну книгу")
@@ -67,8 +61,7 @@ class DBBookServiceJdbcTest {
 
         List<Book> before = dbBookService.getAll();
 
-        Book americanGods = new Book(0, "Американские боги", fantasy.getId(), gaiman.getId());
-        dbBookService.addBook(americanGods);
+        Book americanGods = dbBookService.addBook(new Book(0, "Американские боги", fantasy.getId(), gaiman.getId()));
 
         List<Book> now = dbBookService.getAll();
 
@@ -84,8 +77,6 @@ class DBBookServiceJdbcTest {
         Optional<Book> testBlackRelay = dbBookService.getBook(blackRelay.getId());
         assertThat(testBlackRelay.orElseGet(null)).usingRecursiveComparison().isEqualTo(blackRelay);
     }
-
-
 
     @DisplayName("правильно выбирать все книги из таблицы books")
     @Test
@@ -121,5 +112,15 @@ class DBBookServiceJdbcTest {
 
         Optional<Book> blackRelayActual = dbBookService.getBook(blackRelay.getId());
         assertThat(blackRelayActual.orElseGet(null)).usingRecursiveComparison().isEqualTo(blackRelayChanged);
+    }
+
+    @DisplayName("Должно правильно выбирать расширенные книги")
+    @Test
+    public void getFullShouldReturnExtendedBooks() {
+        List<BookFull> books = dbBookService.getAllFull();
+        BookFull darknessFull = new BookFull(darkness, lukyanenko, fantasy);
+        BookFull blackRelayFull = new BookFull(blackRelay, vasilyev, sciFi);
+
+        assertThat(books).containsExactlyInAnyOrderElementsOf(List.of(darknessFull, blackRelayFull));
     }
 }

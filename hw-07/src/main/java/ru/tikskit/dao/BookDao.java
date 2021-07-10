@@ -1,14 +1,17 @@
 package ru.tikskit.dao;
 
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookFull;
 
 import java.util.List;
 
 public interface BookDao {
 
-    void insert(Book book);
+    Book insert(Book book);
 
     List<Book> getAll();
+
+    List<BookFull> getAllFull();
 
     Book getById(long id);
 

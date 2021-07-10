@@ -32,10 +32,11 @@ public class DBAuthorServiceJdbc implements DBAuthorService {
     }
 
     @Override
-    public void saveAuthor(Author author) {
+    public Author saveAuthor(Author author) {
         try {
-            authorDao.insert(author);
-            logger.info("Author added {}", author);
+            Author res = authorDao.insert(author);
+            logger.info("Author added {}", res);
+            return res;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

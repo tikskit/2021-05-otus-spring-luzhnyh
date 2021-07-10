@@ -3,7 +3,7 @@ package ru.tikskit.domain;
 import java.util.Objects;
 
 public class Author {
-    private long id;
+    private final long id;
     private final String surname;
     private final String name;
 
@@ -13,8 +13,13 @@ public class Author {
         this.name = name;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    /**
+     * Копирующий конструктор с возможностью задать идентификатор
+     * @param id Идентификатор книги в БД
+     * @param author Значения всех полей, кроме id, будут взяты из этого объекта
+     */
+    public Author(long id, Author author) {
+        this(id, author.getSurname(), author.getName());
     }
 
     public long getId() {

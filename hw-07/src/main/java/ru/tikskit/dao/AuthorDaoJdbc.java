@@ -24,13 +24,13 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public void insert(Author author) {
+    public Author insert(Author author) {
         SqlParameterSource paramSource = new MapSqlParameterSource(
                 Map.of("surname", author.getSurname(), "name", author.getName()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update("insert into authors(surname, name) values(:surname, :name)", paramSource, keyHolder);
         long id = (Long) keyHolder.getKey();
-        author.setId(id);
+        return new Author(id, author);
     }
 
     @Override

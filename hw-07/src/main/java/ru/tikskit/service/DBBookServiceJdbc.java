@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.tikskit.dao.BookDao;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookFull;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +34,11 @@ public class DBBookServiceJdbc implements DBBookService {
     }
 
     @Override
-    public void addBook(Book book) {
+    public Book addBook(Book book) {
         try {
-            bookDao.insert(book);
-            logger.info("Book added {}", book);
+            Book res = bookDao.insert(book);
+            logger.info("Book added {}", res);
+            return res;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
@@ -69,6 +71,16 @@ public class DBBookServiceJdbc implements DBBookService {
     public List<Book> getAll() {
         try {
             return bookDao.getAll();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return List.of();
+        }
+    }
+
+    @Override
+    public List<BookFull> getAllFull() {
+        try {
+            return bookDao.getAllFull();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return List.of();

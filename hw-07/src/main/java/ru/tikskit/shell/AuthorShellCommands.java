@@ -28,8 +28,7 @@ public class AuthorShellCommands {
 
     @ShellMethod(value = "Add author command", key = {"author add", "a add"})
     public void addAuthor(String surname, String name) {
-        Author author = new Author(0, surname, name);
-        dbAuthorService.saveAuthor(author);
+        Author author = dbAuthorService.saveAuthor(new Author(0, surname, name));
         output.println(String.format("New author was added: %s", author));
     }
 

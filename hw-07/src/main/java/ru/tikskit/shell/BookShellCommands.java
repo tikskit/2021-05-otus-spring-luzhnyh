@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookFull;
 import ru.tikskit.service.DBBookService;
 import ru.tikskit.service.Output;
 
@@ -19,17 +20,16 @@ public class BookShellCommands {
 
     @ShellMethod(value = "Show all books command", key = {"book list", "b list"})
     public void listBooks() {
-        List<Book> books = dbBookService.getAll();
+        List<BookFull> books = dbBookService.getAllFull();
+
         output.println("Current books:");
-        for (Book b : books) {
-            output.println(String.format("\t%s", b));
-        }
+        books.forEach((b) -> output.println(String.format("\t%s %s \"%s\" (%s)",
+                b.getAuthor().getSurname(), b.getAuthor().getName(), b.getName(), b.getGenre().getName())));
     }
 
     @ShellMethod(value = "Add book command", key = {"book add", "b add"})
     public void addBook(String name, long genreId, long authorId) {
-        Book book = new Book(0, name, genreId, authorId);
-        dbBookService.addBook(book);
+        Book book = dbBookService.addBook(new Book(0, name, genreId, authorId));
         output.println(String.format("New book was added: %s", book));
     }
 

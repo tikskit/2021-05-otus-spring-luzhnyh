@@ -32,10 +32,11 @@ public class DBGenreServiceJdbc implements DBGenreService {
     }
 
     @Override
-    public void saveGenre(Genre genre) {
+    public Genre saveGenre(Genre genre) {
         try {
-            genreDao.insert(genre);
-            logger.info("Genre added {}", genre);
+            Genre res = genreDao.insert(genre);
+            logger.info("Genre added {}", res);
+            return res;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

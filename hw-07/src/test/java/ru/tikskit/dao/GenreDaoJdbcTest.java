@@ -21,8 +21,7 @@ class GenreDaoJdbcTest {
     @DisplayName("выбрасывать исключение при попытке добавить несколько одинаковых жанров")
     @Test
     public void genreCanBeAddedOnlyOnce() {
-        Genre genre1 = new Genre(0, "fantasy");
-        genreDao.insert(genre1);
+        genreDao.insert(new Genre(0, "fantasy"));
         Genre genre2 = new Genre(0, "fantasy");
         assertThatThrownBy(() -> genreDao.insert(genre2)).
                 as("check unique genre constraint").
@@ -32,8 +31,7 @@ class GenreDaoJdbcTest {
     @DisplayName("добавлять методом insert один жанр")
     @Test
     public void insertShouldCreateOneGenre() {
-        Genre expectedGenre = new Genre(0, "sci-fi");
-        genreDao.insert(expectedGenre);
+        Genre expectedGenre = genreDao.insert(new Genre(0, "sci-fi"));
 
         assertThat(expectedGenre.getId()).
                 as("check that id is assigned now").

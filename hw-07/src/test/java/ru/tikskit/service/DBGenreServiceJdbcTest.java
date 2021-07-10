@@ -27,10 +27,8 @@ class DBGenreServiceJdbcTest {
 
     @BeforeEach
     public void setUp() {
-        sciFi = new Genre(0, "sci-fi");
-        dbGenreService.saveGenre(sciFi);
-        fantasy = new Genre(0, "fantasy");
-        dbGenreService.saveGenre(fantasy);
+        sciFi = dbGenreService.saveGenre(new Genre(0, "sci-fi"));
+        fantasy = dbGenreService.saveGenre(new Genre(0, "fantasy"));
     }
 
     @DisplayName("добавлять один и только один жанр")
@@ -38,8 +36,7 @@ class DBGenreServiceJdbcTest {
     public void saveGenreShouldInsertOneAuthor() {
         List<Genre> before = dbGenreService.getAll();
 
-        Genre classic = new Genre(0, "classic");
-        dbGenreService.saveGenre(classic);
+        Genre classic = dbGenreService.saveGenre(new Genre(0, "classic"));
 
         List<Genre> now = dbGenreService.getAll();
 

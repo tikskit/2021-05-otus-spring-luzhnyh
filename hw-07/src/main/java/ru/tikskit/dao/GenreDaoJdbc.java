@@ -31,19 +31,18 @@ public class GenreDaoJdbc implements GenreDao {
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public void insert(Genre genre) {
+    public Genre insert(Genre genre) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new MapSqlParameterSource(Map.of("name", genre.getName()));
         jdbc.update("insert into genres(name) values(:name)", paramSource, keyHolder);
         long id = (Long) keyHolder.getKey();
-        genre.setId(id);
+        return new Genre(id, genre);
     }
 
     @Override
     public List<Genre> getAll() {
         return jdbc.query("select id, name from genres", new GenreRowMapper());
     }
-
 
     private static class GenreRowMapper implements RowMapper<Genre> {
         @Override
