@@ -87,6 +87,7 @@
         <module>hw-04</module>
         <module>hw-05</module>
         <module>hw-07</module>
+        <module>hw-09</module>
     </modules>
 
     <build>
