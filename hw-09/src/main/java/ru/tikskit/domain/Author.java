@@ -1,13 +1,19 @@
 package ru.tikskit.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "authors")
 public class Author {
@@ -22,15 +28,6 @@ public class Author {
     @Column(name = "name")
     private String name;
 
-    public Author() {
-    }
-
-    public Author(long id, String surname, String name) {
-        this.id = id;
-        this.surname = surname;
-        this.name = name;
-    }
-
     /**
      * Копирующий конструктор с возможностью задать идентификатор
      * @param id Идентификатор книги в БД
@@ -38,43 +35,6 @@ public class Author {
      */
     public Author(long id, Author author) {
         this(id, author.getSurname(), author.getName());
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Author author = (Author) o;
-        return id == author.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
     @Override
