@@ -1,11 +1,11 @@
-package ru.tikskit.service;
+package ru.tikskit.repository;
 
 import ru.tikskit.domain.Author;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface DBAuthorService {
+public interface DBAuthorRepository {
 
     Optional<Author> getAuthor(long id);
 

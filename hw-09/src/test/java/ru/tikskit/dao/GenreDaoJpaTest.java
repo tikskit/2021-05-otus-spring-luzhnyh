@@ -3,7 +3,8 @@ package ru.tikskit.dao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.domain.Genre;
 
@@ -12,21 +13,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с жанрами должно")
-@JdbcTest
-@Import(GenreDaoJdbc.class)
-class GenreDaoJdbcTest {
-    @Autowired
-    private GenreDaoJdbc genreDao;
+@DataJpaTest
+@Import(GenreDaoJpa.class)
+class GenreDaoJpaTest {
 
-    @DisplayName("выбрасывать исключение при попытке добавить несколько одинаковых жанров")
-    @Test
-    public void genreCanBeAddedOnlyOnce() {
-        genreDao.insert(new Genre(0, "fantasy"));
-        Genre genre2 = new Genre(0, "fantasy");
-        assertThatThrownBy(() -> genreDao.insert(genre2)).
-                as("check unique genre constraint").
-                isInstanceOf(RuntimeException.class);
-    }
+    @Autowired
+    private GenreDaoJpa genreDao;
+
+    @Autowired
+    private TestEntityManager em;
 
     @DisplayName("добавлять методом insert один жанр")
     @Test
@@ -37,7 +32,7 @@ class GenreDaoJdbcTest {
                 as("check that id is assigned now").
                 isGreaterThan(0);
 
-        Genre actualGenre = genreDao.getById(expectedGenre.getId());
+        Genre actualGenre = em.find(Genre.class, expectedGenre.getId());
         assertThat(expectedGenre).usingRecursiveComparison()
                 .isEqualTo(actualGenre);
     }
@@ -48,7 +43,7 @@ class GenreDaoJdbcTest {
         List<String> genres = List.of("sci-fi", "fantasy", "autobiography");
 
         for (String genre : genres) {
-            genreDao.insert(new Genre(0, genre));
+            em.persist(new Genre(0, genre));
         }
 
         List<Genre> actualGenres = genreDao.getAll();
@@ -57,5 +52,4 @@ class GenreDaoJdbcTest {
                 as("check that exist only genres we've just added").
                 containsExactlyInAnyOrderElementsOf(genres);
     }
-
 }

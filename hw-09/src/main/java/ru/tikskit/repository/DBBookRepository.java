@@ -1,12 +1,11 @@
-package ru.tikskit.service;
+package ru.tikskit.repository;
 
 import ru.tikskit.domain.Book;
-import ru.tikskit.domain.BookFull;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface DBBookService {
+public interface DBBookRepository {
 
     Optional<Book> getBook(long id);
 
@@ -17,6 +16,4 @@ public interface DBBookService {
     void deleteBook(long id);
 
     List<Book> getAll();
-
-    List<BookFull> getAllFull();
 }

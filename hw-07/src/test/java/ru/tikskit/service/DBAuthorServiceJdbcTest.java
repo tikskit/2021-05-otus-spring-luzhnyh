@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("Сервис для работы с авторами должен")
+@DisplayName("Репозиторий для работы с авторами должен")
 @JdbcTest
 @Import({DBAuthorServiceJdbc.class, AuthorDaoJdbc.class})
 class DBAuthorServiceJdbcTest {

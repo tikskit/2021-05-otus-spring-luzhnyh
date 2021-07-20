@@ -1,12 +1,12 @@
-package ru.tikskit.service;
+package ru.tikskit.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.tikskit.dao.GenreDaoJdbc;
+import ru.tikskit.dao.GenreDaoJpa;
 import ru.tikskit.domain.Genre;
 
 import java.util.ArrayList;
@@ -15,30 +15,31 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("Сервис для жанров должен")
-@JdbcTest
-@Import({DBGenreServiceJdbc.class, GenreDaoJdbc.class})
-class DBGenreServiceJdbcTest {
+@DisplayName("Репозиторий для жанров должен")
+@DataJpaTest
+@Import({DBGenreRepositoryJpa.class, GenreDaoJpa.class})
+class DBGenreRepositoryJpaTest {
+
     @Autowired
-    private DBGenreService dbGenreService;
+    private DBGenreRepository dbGenreRepository;
 
     private Genre sciFi;
     private Genre fantasy;
 
     @BeforeEach
     public void setUp() {
-        sciFi = dbGenreService.saveGenre(new Genre(0, "sci-fi"));
-        fantasy = dbGenreService.saveGenre(new Genre(0, "fantasy"));
+        sciFi = dbGenreRepository.saveGenre(new Genre(0, "sci-fi"));
+        fantasy = dbGenreRepository.saveGenre(new Genre(0, "fantasy"));
     }
 
     @DisplayName("добавлять один и только один жанр")
     @Test
     public void saveGenreShouldInsertOneAuthor() {
-        List<Genre> before = dbGenreService.getAll();
+        List<Genre> before = dbGenreRepository.getAll();
 
-        Genre classic = dbGenreService.saveGenre(new Genre(0, "classic"));
+        Genre classic = dbGenreRepository.saveGenre(new Genre(0, "classic"));
 
-        List<Genre> now = dbGenreService.getAll();
+        List<Genre> now = dbGenreRepository.getAll();
 
         List<Genre> expected = new ArrayList<>(before);
         expected.add(classic);
@@ -49,7 +50,7 @@ class DBGenreServiceJdbcTest {
     @DisplayName("правильно возвращать жанр по идентификатору")
     @Test
     public void getGenreShouldReturnProperEntity() {
-        Optional<Genre> testSciFi = dbGenreService.getGenre(sciFi.getId());
+        Optional<Genre> testSciFi = dbGenreRepository.getGenre(sciFi.getId());
 
         assertThat(testSciFi.orElseGet(null)).usingRecursiveComparison().isEqualTo(sciFi);
     }
@@ -59,7 +60,7 @@ class DBGenreServiceJdbcTest {
     public void getAllShouldReturnAllBooks() {
         List<Genre> expected = List.of(sciFi, fantasy);
 
-        List<Genre> actual = dbGenreService.getAll();
+        List<Genre> actual = dbGenreRepository.getAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 }

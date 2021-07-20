@@ -1,11 +1,11 @@
-package ru.tikskit.service;
+package ru.tikskit.repository;
 
 import ru.tikskit.domain.Genre;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface DBGenreService {
+public interface DBGenreRepository {
 
     Optional<Genre> getGenre(long id);
 
