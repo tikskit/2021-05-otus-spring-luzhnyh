@@ -13,7 +13,7 @@ public interface DBBookRepository {
 
     void changeBook(Book book);
 
-    void deleteBook(long id);
+    void deleteBook(Book book);
 
     List<Book> getAll();
 }
