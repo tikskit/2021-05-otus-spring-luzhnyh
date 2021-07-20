@@ -1,13 +1,16 @@
 package ru.tikskit.dao;
 
 import org.springframework.stereotype.Repository;
+import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.Genre;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class BookDaoJpa implements BookDao {
@@ -22,8 +25,13 @@ public class BookDaoJpa implements BookDao {
     @Override
     @Transactional
     public Book insert(Book book) {
-        em.persist(book);
-        return book;
+        Author author = em.merge(Objects.requireNonNull(book.getAuthor(), "Автор не задан"));
+        Genre genre = em.merge(Objects.requireNonNull(book.getGenre(), "Жанр не задан"));
+
+        Book newBook = new Book(book.getId(), book.getName(), author, genre);
+
+        em.persist(newBook);
+        return newBook;
     }
 
     @Override

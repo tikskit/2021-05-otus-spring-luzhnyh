@@ -70,6 +70,16 @@ class DBBookRepositoryJpaTest {
         assertThat(now).containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    @DisplayName("Добавлять новую книгу с объектами автор и жанр, которые не в состоянии persistent")
+    @Test
+    public void shouldAddNewBookWithTransientOrDatachedAuthorAndGenre() {
+        Author author = new Author(0, "Шилдт", "Герберт");
+        Genre genre = new Genre(0, "Computer science");
+        Book book = new Book(0, "Полный Самоучитель С++", author, genre);
+
+        dbBookRepository.addBook(book);
+    }
+
     @DisplayName("правильно возвращать книгу по идентификатору")
     @Test
     public void getBookShouldReturnProperEntity() {
