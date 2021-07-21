@@ -5,14 +5,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.dao.BookDaoJpa;
 import ru.tikskit.dao.GenreDaoJpa;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.Comment;
 import ru.tikskit.domain.Genre;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +33,8 @@ class DBBookRepositoryJpaTest {
     DBAuthorRepository dbAuthorRepository;
     @Autowired
     DBGenreRepository dbGenreRepository;
+    @Autowired
+    TestEntityManager em;
 
     private Author lukyanenko;
     private Author vasilyev;
@@ -50,8 +55,8 @@ class DBBookRepositoryJpaTest {
         sciFi = dbGenreRepository.saveGenre(new Genre(0, "sci-fi"));
         fantasy = dbGenreRepository.saveGenre(new Genre(0, "fantasy"));
 
-        blackRelay = dbBookRepository.addBook(new Book(0, "Черная эстафета", vasilyev, sciFi));
-        darkness = dbBookRepository.addBook(new Book(0, "Тьма", lukyanenko, fantasy));
+        blackRelay = dbBookRepository.addBook(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
+        darkness = dbBookRepository.addBook(new Book(0, "Тьма", lukyanenko, fantasy, null));
     }
 
     @DisplayName("добавлять одну и только одну книгу")
@@ -60,7 +65,7 @@ class DBBookRepositoryJpaTest {
 
         List<Book> before = dbBookRepository.getAll();
 
-        Book americanGods = dbBookRepository.addBook(new Book(0, "Американские боги", gaiman, fantasy));
+        Book americanGods = dbBookRepository.addBook(new Book(0, "Американские боги", gaiman, fantasy, null));
 
         List<Book> now = dbBookRepository.getAll();
 
@@ -75,7 +80,7 @@ class DBBookRepositoryJpaTest {
     public void shouldAddNewBookWithTransientOrDatachedAuthorAndGenre() {
         Author author = new Author(0, "Шилдт", "Герберт");
         Genre genre = new Genre(0, "Computer science");
-        Book book = new Book(0, "Полный Самоучитель С++", author, genre);
+        Book book = new Book(0, "Полный Самоучитель С++", author, genre, null);
 
         dbBookRepository.addBook(book);
     }
@@ -114,7 +119,8 @@ class DBBookRepositoryJpaTest {
     @DisplayName("правильно изменять книги в БД")
     @Test
     public void bookChangedProperly() {
-        Book blackRelayChanged = new Book(blackRelay.getId(), "Очень черная эстафета", lukyanenko, fantasy);
+        Book blackRelayChanged = new Book(blackRelay.getId(), "Очень черная эстафета", lukyanenko, fantasy,
+                null);
 
         dbBookRepository.changeBook(blackRelayChanged);
 
@@ -126,9 +132,58 @@ class DBBookRepositoryJpaTest {
     @Test
     public void getFullShouldReturnExtendedBooks() {
         List<Book> books = dbBookRepository.getAll();
-        Book darkness = new Book(this.darkness, lukyanenko, fantasy);
-        Book blackRelay = new Book(this.blackRelay, vasilyev, sciFi);
+        Book darkness = new Book(this.darkness.getId(), this.darkness.getName(), lukyanenko, fantasy, null);
+        Book blackRelay = new Book(this.blackRelay.getId(), this.blackRelay.getName(), vasilyev, sciFi, null);
 
         assertThat(books).containsExactlyInAnyOrderElementsOf(List.of(darkness, blackRelay));
     }
+
+    @DisplayName("загружать лениво каменты к книге. Один запрос на все каменты")
+    @Test
+    public void shouldReturnBookThatPullsCommentsLazyly() {
+        Book book = new Book(0, "test", lukyanenko, sciFi, null);
+
+        List<Comment> expected = List.of(
+                new Comment(0, "Лукьяненко чмо"),
+                new Comment(0, "Все книги про бабки"),
+                new Comment(0, "Перечитываю 10 раз"),
+                new Comment(0, "Он целый год писал, а я за ночь прочитал"),
+                new Comment(0, "Хорошая книга, рояль на ней стоит и не шатается"),
+                new Comment(0, "Качество бумаги не очень, газетка"),
+                new Comment(0, "Как стереть память?"));
+        book.setComments(expected);
+
+        book = dbBookRepository.addBook(book);
+        long bookId = book.getId();
+
+        em.flush();
+        em.clear();
+
+        Optional<Book> actual = dbBookRepository.getBook(bookId);
+
+        assertThat(actual).isPresent();
+        assertThat(actual.get().getComments()).containsExactlyInAnyOrderElementsOf(book.getComments());
+
+    }
+
+    @DisplayName("сохранять в БД все добавленные комментарии к существующей книге")
+    @Transactional
+    @Test
+    public void shouldAddComments2ExistingBook() {
+        List<Comment> initComments = new ArrayList<>();
+        initComments.add(new Comment(0, "Лукьяненко чмо"));
+        initComments.add(new Comment(0, "Все книги про бабки"));
+        initComments.add(new Comment(0, "Как стереть память?"));
+
+        darkness.setComments(initComments);
+        Book updatedBook = dbBookRepository.changeBook(darkness);
+        final long bookId = updatedBook.getId();
+
+        em.flush();
+        em.clear();
+
+        Book actualBook = em.find(Book.class, bookId);
+        assertThat(actualBook.getComments()).containsExactlyInAnyOrderElementsOf(initComments);
+    }
+
 }

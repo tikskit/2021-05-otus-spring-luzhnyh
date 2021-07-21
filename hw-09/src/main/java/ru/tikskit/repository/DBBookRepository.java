@@ -11,7 +11,7 @@ public interface DBBookRepository {
 
     Book addBook(Book book);
 
-    void changeBook(Book book);
+    Book changeBook(Book book);
 
     void deleteBook(Book book);
 

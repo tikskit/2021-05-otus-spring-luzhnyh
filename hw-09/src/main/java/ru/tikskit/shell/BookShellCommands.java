@@ -11,6 +11,8 @@ import ru.tikskit.repository.DBBookRepository;
 import ru.tikskit.repository.DBGenreRepository;
 import ru.tikskit.service.Output;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +46,8 @@ public class BookShellCommands {
             throw new BookShellException(String.format("Жанр %d не найден в БД", genreId));
         }
 
-        Book book = dbBookRepository.addBook(new Book(0, name, author.get(), genre.get()));
+
+        Book book = dbBookRepository.addBook(new Book(0, name, author.get(), genre.get(), null));
         output.println(String.format("New book was added: %s", book));
     }
 
@@ -74,6 +77,18 @@ public class BookShellCommands {
             throw new BookShellException(String.format("Жанр %d не найден в БД", genreId));
         }
 
-        dbBookRepository.changeBook(new Book(id, name, author.get(), genre.get()));
+        dbBookRepository.changeBook(new Book(id, name, author.get(), genre.get(), null));
+    }
+
+    @Transactional
+    @ShellMethod(value = "Show book comments", key = {"show comments", "b comments"})
+    public void showComments(long bookId) {
+        Optional<Book> book = dbBookRepository.getBook(bookId);
+        if (book.isPresent()) {
+            output.println("Комментарии к книге:" + System.lineSeparator());
+            book.get().getComments().forEach(c -> output.println("\t" + c.getText()));
+        } else {
+            throw new BookShellException(String.format("Книга %d отссутствует в БД", bookId));
+        }
     }
 }

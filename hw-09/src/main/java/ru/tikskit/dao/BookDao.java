@@ -12,7 +12,7 @@ public interface BookDao {
 
     Book getById(long id);
 
-    void update(Book book);
+    Book update(Book book);
 
-    void deleteById(Book book);
+    void delete(Book book);
 }

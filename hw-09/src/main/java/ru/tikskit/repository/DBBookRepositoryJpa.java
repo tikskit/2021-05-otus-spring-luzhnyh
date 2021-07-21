@@ -44,10 +44,11 @@ public class DBBookRepositoryJpa implements DBBookRepository {
     }
 
     @Override
-    public void changeBook(Book book) {
+    public Book changeBook(Book book) {
         try {
-            bookDao.update(book);
-            logger.info("Book updated {}", book);
+            Book updated = bookDao.update(book);
+            logger.info("Book updated {}", updated);
+            return updated;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
@@ -57,7 +58,7 @@ public class DBBookRepositoryJpa implements DBBookRepository {
     @Override
     public void deleteBook(Book book) {
         try {
-            bookDao.deleteById(book);
+            bookDao.delete(book);
             logger.info("Book deleted {}", book);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

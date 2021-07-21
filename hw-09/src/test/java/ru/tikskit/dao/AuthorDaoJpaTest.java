@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 class AuthorDaoJpaTest {
 
     @Autowired
-    private AuthorDaoJpa authorDao;
+    private AuthorDao authorDao;
 
     @Autowired
     private TestEntityManager em;

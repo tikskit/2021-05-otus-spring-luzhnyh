@@ -28,7 +28,7 @@ public class BookDaoJpa implements BookDao {
         Author author = em.merge(Objects.requireNonNull(book.getAuthor(), "Автор не задан"));
         Genre genre = em.merge(Objects.requireNonNull(book.getGenre(), "Жанр не задан"));
 
-        Book newBook = new Book(book.getId(), book.getName(), author, genre);
+        Book newBook = new Book(book.getId(), book.getName(), author, genre, book.getComments());
 
         em.persist(newBook);
         return newBook;
@@ -37,27 +37,31 @@ public class BookDaoJpa implements BookDao {
     @Override
     @Transactional
     public List<Book> getAll() {
-        TypedQuery<Book> query = em.createQuery("select b from Book b join fetch b.genre g join fetch b.author a", Book.class);
+        TypedQuery<Book> query = em.createQuery(
+                "select b from Book b join fetch b.genre g join fetch b.author a",
+                Book.class);
         return query.getResultList();
     }
 
     @Override
     @Transactional
     public Book getById(long id) {
-        TypedQuery<Book> query = em.createQuery("select b from Book b join fetch b.genre g join fetch b.author a where b.id = :id", Book.class);
+        TypedQuery<Book> query = em.createQuery(
+                "select b from Book b join fetch b.genre g join fetch b.author a where b.id = :id",
+                Book.class);
         query.setParameter("id", id);
         return query.getSingleResult();
     }
 
     @Override
     @Transactional
-    public void update(Book book) {
-        em.merge(book);
+    public Book update(Book book) {
+        return em.merge(book);
     }
 
     @Override
     @Transactional
-    public void deleteById(Book book) {
+    public void delete(Book book) {
         em.remove(book);
     }
 }

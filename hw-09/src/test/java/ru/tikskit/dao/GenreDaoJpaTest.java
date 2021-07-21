@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 class GenreDaoJpaTest {
 
     @Autowired
-    private GenreDaoJpa genreDao;
+    private GenreDao genreDao;
 
     @Autowired
     private TestEntityManager em;
