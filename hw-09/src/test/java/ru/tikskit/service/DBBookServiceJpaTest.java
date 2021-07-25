@@ -1,4 +1,4 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,15 +24,15 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для книг должен")
 @DataJpaTest
-@Import({DBBookRepositoryJpa.class, BookDaoJpa.class, DBAuthorRepositoryJpa.class, AuthorDaoJpa.class,
-        DBGenreRepositoryJpa.class, GenreDaoJpa.class})
-class DBBookRepositoryJpaTest {
+@Import({DBBookServiceJpa.class, BookDaoJpa.class, DBAuthorServiceJpa.class, AuthorDaoJpa.class,
+        DBGenreServiceJpa.class, GenreDaoJpa.class})
+class DBBookServiceJpaTest {
     @Autowired
-    DBBookRepository dbBookRepository;
+    DBBookService dbBookService;
     @Autowired
-    DBAuthorRepository dbAuthorRepository;
+    DBAuthorService dbAuthorService;
     @Autowired
-    DBGenreRepository dbGenreRepository;
+    DBGenreService dbGenreService;
     @Autowired
     TestEntityManager em;
 
@@ -48,26 +48,26 @@ class DBBookRepositoryJpaTest {
 
     @BeforeEach
     public void setUp() {
-        lukyanenko = dbAuthorRepository.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
-        vasilyev = dbAuthorRepository.saveAuthor(new Author(0, "Васильев", "Сергей"));
-        gaiman = dbAuthorRepository.saveAuthor(new Author(0, "Гейман", "Нил"));
+        lukyanenko = dbAuthorService.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
+        vasilyev = dbAuthorService.saveAuthor(new Author(0, "Васильев", "Сергей"));
+        gaiman = dbAuthorService.saveAuthor(new Author(0, "Гейман", "Нил"));
 
-        sciFi = dbGenreRepository.saveGenre(new Genre(0, "sci-fi"));
-        fantasy = dbGenreRepository.saveGenre(new Genre(0, "fantasy"));
+        sciFi = dbGenreService.saveGenre(new Genre(0, "sci-fi"));
+        fantasy = dbGenreService.saveGenre(new Genre(0, "fantasy"));
 
-        blackRelay = dbBookRepository.addBook(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
-        darkness = dbBookRepository.addBook(new Book(0, "Тьма", lukyanenko, fantasy, null));
+        blackRelay = dbBookService.addBook(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
+        darkness = dbBookService.addBook(new Book(0, "Тьма", lukyanenko, fantasy, null));
     }
 
     @DisplayName("добавлять одну и только одну книгу")
     @Test
     public void addBookShouldAddOnlyOneBook(){
 
-        List<Book> before = dbBookRepository.getAll();
+        List<Book> before = dbBookService.getAll();
 
-        Book americanGods = dbBookRepository.addBook(new Book(0, "Американские боги", gaiman, fantasy, null));
+        Book americanGods = dbBookService.addBook(new Book(0, "Американские боги", gaiman, fantasy, null));
 
-        List<Book> now = dbBookRepository.getAll();
+        List<Book> now = dbBookService.getAll();
 
         List<Book> expected = new ArrayList<>(before);
         expected.add(americanGods);
@@ -82,13 +82,13 @@ class DBBookRepositoryJpaTest {
         Genre genre = new Genre(0, "Computer science");
         Book book = new Book(0, "Полный Самоучитель С++", author, genre, null);
 
-        dbBookRepository.addBook(book);
+        dbBookService.addBook(book);
     }
 
     @DisplayName("правильно возвращать книгу по идентификатору")
     @Test
     public void getBookShouldReturnProperEntity() {
-        Optional<Book> testBlackRelay = dbBookRepository.getBook(blackRelay.getId());
+        Optional<Book> testBlackRelay = dbBookService.getBook(blackRelay.getId());
         assertThat(testBlackRelay.orElseGet(null)).usingRecursiveComparison().isEqualTo(blackRelay);
     }
 
@@ -97,18 +97,18 @@ class DBBookRepositoryJpaTest {
     public void getAllShouldReturnAllBooks() {
         List<Book> expected = List.of(darkness, blackRelay);
 
-        List<Book> actual = dbBookRepository.getAll();
+        List<Book> actual = dbBookService.getAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @DisplayName("правильно удалять книги из БД")
     @Test
     public void entityDisappearsWhenItDeleted() {
-        List<Book> before = dbBookRepository.getAll();
+        List<Book> before = dbBookService.getAll();
 
-        dbBookRepository.deleteBook(darkness);
+        dbBookService.deleteBook(darkness);
 
-        List<Book> after = dbBookRepository.getAll();
+        List<Book> after = dbBookService.getAll();
 
         List<Book> expected = new ArrayList<>(before);
         expected.remove(darkness);
@@ -122,16 +122,16 @@ class DBBookRepositoryJpaTest {
         Book blackRelayChanged = new Book(blackRelay.getId(), "Очень черная эстафета", lukyanenko, fantasy,
                 null);
 
-        dbBookRepository.changeBook(blackRelayChanged);
+        dbBookService.changeBook(blackRelayChanged);
 
-        Optional<Book> blackRelayActual = dbBookRepository.getBook(blackRelay.getId());
+        Optional<Book> blackRelayActual = dbBookService.getBook(blackRelay.getId());
         assertThat(blackRelayActual.orElseGet(null)).usingRecursiveComparison().isEqualTo(blackRelayChanged);
     }
 
     @DisplayName("Должно правильно выбирать расширенные книги")
     @Test
     public void getFullShouldReturnExtendedBooks() {
-        List<Book> books = dbBookRepository.getAll();
+        List<Book> books = dbBookService.getAll();
         Book darkness = new Book(this.darkness.getId(), this.darkness.getName(), lukyanenko, fantasy, null);
         Book blackRelay = new Book(this.blackRelay.getId(), this.blackRelay.getName(), vasilyev, sciFi, null);
 
@@ -153,13 +153,13 @@ class DBBookRepositoryJpaTest {
                 new Comment(0, "Как стереть память?"));
         book.setComments(expected);
 
-        book = dbBookRepository.addBook(book);
+        book = dbBookService.addBook(book);
         long bookId = book.getId();
 
         em.flush();
         em.clear();
 
-        Optional<Book> actual = dbBookRepository.getBook(bookId);
+        Optional<Book> actual = dbBookService.getBook(bookId);
 
         assertThat(actual).isPresent();
         assertThat(actual.get().getComments()).containsExactlyInAnyOrderElementsOf(book.getComments());
@@ -176,7 +176,7 @@ class DBBookRepositoryJpaTest {
         initComments.add(new Comment(0, "Как стереть память?"));
 
         darkness.setComments(initComments);
-        Book updatedBook = dbBookRepository.changeBook(darkness);
+        Book updatedBook = dbBookService.changeBook(darkness);
         final long bookId = updatedBook.getId();
 
         em.flush();

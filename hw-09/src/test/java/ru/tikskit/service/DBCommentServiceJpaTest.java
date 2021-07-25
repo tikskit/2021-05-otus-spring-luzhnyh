@@ -1,4 +1,4 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +18,10 @@ import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
 import ru.tikskit.domain.Genre;
+import ru.tikskit.service.DBBookService;
+import ru.tikskit.service.DBBookServiceJpa;
+import ru.tikskit.service.DBCommentService;
+import ru.tikskit.service.DBCommentServiceJpa;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -26,15 +30,15 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-@Import({DBCommentRepositoryJpa.class, DBBookRepositoryJpa.class, CommentDaoJpa.class, AuthorDaoJpa.class,
+@Import({DBCommentServiceJpa.class, DBBookServiceJpa.class, CommentDaoJpa.class, AuthorDaoJpa.class,
         BookDaoJpa.class, GenreDaoJpa.class})
-class DBCommentRepositoryJpaTest {
+class DBCommentServiceJpaTest {
     @Autowired
     private TestEntityManager em;
     @Autowired
-    DBCommentRepository dbCommentRepository;
+    DBCommentService dbCommentService;
     @Autowired
-    DBBookRepository dbBookRepository;
+    DBBookService dbBookService;
     @Autowired
     private AuthorDao authorDao;
     @Autowired
@@ -76,7 +80,7 @@ class DBCommentRepositoryJpaTest {
     public void shouldAddCommentForBook() {
         final long darknessBookId = darkness.getId();
         final String commentText = "Перечитал 10 раз";
-        dbCommentRepository.addComment4Book(commentText, darknessBookId);
+        dbCommentService.addComment4Book(commentText, darknessBookId);
 
         em.flush();
         em.clear();
@@ -100,7 +104,7 @@ class DBCommentRepositoryJpaTest {
 
         anyOfBlackRelayComments.setText(newText);
 
-        dbCommentRepository.changeComment(anyOfBlackRelayComments);
+        dbCommentService.changeComment(anyOfBlackRelayComments);
         em.flush();
         em.clear();
 
@@ -122,7 +126,7 @@ class DBCommentRepositoryJpaTest {
         em.clear();
 
         Comment comment = em.find(Comment.class, commentId);
-        dbCommentRepository.deleteComment(comment);
+        dbCommentService.deleteComment(comment);
         em.flush();
         em.clear();
 

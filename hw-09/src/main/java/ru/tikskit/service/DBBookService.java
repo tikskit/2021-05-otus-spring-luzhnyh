@@ -1,11 +1,11 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import ru.tikskit.domain.Book;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface DBBookRepository {
+public interface DBBookService {
 
     Optional<Book> getBook(long id);
 

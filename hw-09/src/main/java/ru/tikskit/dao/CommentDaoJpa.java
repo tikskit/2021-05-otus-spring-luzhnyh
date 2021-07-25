@@ -5,7 +5,6 @@ import ru.tikskit.domain.Comment;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 @Repository
@@ -19,11 +18,8 @@ public class CommentDaoJpa implements CommentDao {
     }
 
     @Override
-    @Transactional
     public Comment getById(long id) {
-        TypedQuery<Comment> query = em.createQuery("select c from Comment c where id =: id", Comment.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+        return em.find(Comment.class, id);
     }
 
     @Override

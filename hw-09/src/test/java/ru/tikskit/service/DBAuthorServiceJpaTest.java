@@ -1,4 +1,4 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.domain.Author;
+import ru.tikskit.service.DBAuthorService;
+import ru.tikskit.service.DBAuthorServiceJpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,29 +19,29 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Сервис для работы с авторами должен")
 @DataJpaTest
-@Import({DBAuthorRepositoryJpa.class, AuthorDaoJpa.class})
-class DBAuthorRepositoryJpaTest {
+@Import({DBAuthorServiceJpa.class, AuthorDaoJpa.class})
+class DBAuthorServiceJpaTest {
 
     @Autowired
-    private DBAuthorRepository authorRepository;
+    private DBAuthorService authorService;
 
     private Author lukyanenko;
     private Author vasilyev;
 
     @BeforeEach
     public void setUp() {
-        lukyanenko = authorRepository.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
-        vasilyev = authorRepository.saveAuthor(new Author(0, "Васильев", "Сергей"));
+        lukyanenko = authorService.saveAuthor(new Author(0, "Лукьяненко", "Сергей"));
+        vasilyev = authorService.saveAuthor(new Author(0, "Васильев", "Сергей"));
     }
 
     @DisplayName("добавлять одного и только одного автора")
     @Test
     public void saveAuthorShouldInsertOneAuthor() {
-        List<Author> before = authorRepository.getAll();
+        List<Author> before = authorService.getAll();
 
-        Author gaiman = authorRepository.saveAuthor(new Author(0, "Гейман", "Нил"));
+        Author gaiman = authorService.saveAuthor(new Author(0, "Гейман", "Нил"));
 
-        List<Author> now = authorRepository.getAll();
+        List<Author> now = authorService.getAll();
 
         List<Author> expected = new ArrayList<>(before);
         expected.add(gaiman);
@@ -50,7 +52,7 @@ class DBAuthorRepositoryJpaTest {
     @DisplayName("правильно возвращать автора по идентификатору")
     @Test
     public void getAuthorShouldReturnProperEntity() {
-        Optional<Author> testLukyaninko = authorRepository.getAuthor(lukyanenko.getId());
+        Optional<Author> testLukyaninko = authorService.getAuthor(lukyanenko.getId());
 
         assertThat(testLukyaninko.orElseGet(null)).usingRecursiveComparison().isEqualTo(lukyanenko);
     }
@@ -60,7 +62,7 @@ class DBAuthorRepositoryJpaTest {
     public void getAllShouldReturnAllBooks() {
         List<Author> expected = List.of(vasilyev, lukyanenko);
 
-        List<Author> actual = authorRepository.getAll();
+        List<Author> actual = authorService.getAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 }

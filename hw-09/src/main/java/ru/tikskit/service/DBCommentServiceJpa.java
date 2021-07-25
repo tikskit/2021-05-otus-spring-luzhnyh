@@ -1,8 +1,8 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import ru.tikskit.dao.CommentDao;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class DBCommentRepositoryJpa implements DBCommentRepository {
-    private static final Logger logger = LoggerFactory.getLogger(DBCommentRepositoryJpa.class);
+@Service
+public class DBCommentServiceJpa implements DBCommentService {
+    private static final Logger logger = LoggerFactory.getLogger(DBCommentServiceJpa.class);
 
     private final CommentDao commentDao;
-    private final DBBookRepository dbBookRepository;
+    private final DBBookService dbBookService;
 
-    public DBCommentRepositoryJpa(CommentDao commentDao, DBBookRepository dbBookRepository) {
+    public DBCommentServiceJpa(CommentDao commentDao, DBBookService dbBookService) {
         this.commentDao = commentDao;
-        this.dbBookRepository = dbBookRepository;
+        this.dbBookService = dbBookService;
     }
 
     @Override
@@ -39,19 +39,18 @@ public class DBCommentRepositoryJpa implements DBCommentRepository {
     @Transactional
     @Override
     public void addComment4Book(String text, long bookId) {
-        Optional<Book> book = dbBookRepository.getBook(bookId);
+        Optional<Book> book = dbBookService.getBook(bookId);
         if (book.isPresent()) {
             List<Comment> comments = book.get().getComments() == null ? new ArrayList<>() : book.get().getComments();
             comments.add(new Comment(0, text));
             book.get().setComments(comments);
 
-            dbBookRepository.changeBook(book.get());
+            dbBookService.changeBook(book.get());
         } else {
-            throw new DBCommentRepositoryException(String.format("Книга %d не найдена", bookId));
+            throw new DBCommentServiceException(String.format("Книга %d не найдена", bookId));
         }
     }
 
-    @Transactional
     @Override
     public Comment changeComment(Comment comment) {
         try {
@@ -64,7 +63,6 @@ public class DBCommentRepositoryJpa implements DBCommentRepository {
         }
     }
 
-    @Transactional
     @Override
     public void deleteComment(Comment comment) {
         try {

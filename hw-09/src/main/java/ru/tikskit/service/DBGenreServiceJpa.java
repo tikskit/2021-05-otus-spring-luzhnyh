@@ -1,21 +1,21 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import ru.tikskit.dao.GenreDao;
 import ru.tikskit.domain.Genre;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class DBGenreRepositoryJpa implements DBGenreRepository {
-    private static final Logger logger = LoggerFactory.getLogger(DBGenreRepositoryJpa.class);
+@Service
+public class DBGenreServiceJpa implements DBGenreService {
+    private static final Logger logger = LoggerFactory.getLogger(DBGenreServiceJpa.class);
 
     private final GenreDao genreDao;
 
-    public DBGenreRepositoryJpa(GenreDao genreDao) {
+    public DBGenreServiceJpa(GenreDao genreDao) {
         this.genreDao = genreDao;
     }
 

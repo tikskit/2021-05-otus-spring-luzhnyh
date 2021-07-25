@@ -5,8 +5,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
-import ru.tikskit.repository.DBBookRepository;
-import ru.tikskit.repository.DBCommentRepository;
+import ru.tikskit.service.DBBookService;
+import ru.tikskit.service.DBCommentService;
 import ru.tikskit.service.Output;
 
 import javax.transaction.Transactional;
@@ -16,14 +16,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentShellCommands {
     private final Output output;
-    private final DBBookRepository dbBookRepository;
-    private final DBCommentRepository dbCommentRepository;
+    private final DBBookService dbBookService;
+    private final DBCommentService dbCommentService;
 
     @Transactional
     @ShellMethod(value = "Add comment for book command", key = {"comment add", "c add"})
     public void addComment(long bookId, String comment) {
-        dbCommentRepository.addComment4Book(comment, bookId);
-        Optional<Book> book = dbBookRepository.getBook(bookId);
+        dbCommentService.addComment4Book(comment, bookId);
+        Optional<Book> book = dbBookService.getBook(bookId);
         if (book.isPresent()) {
             output.println("Все комментарии к книге:" + System.lineSeparator());
             book.get().getComments().forEach(c -> output.println(String.format("\t%d. %s", c.getId(), c.getText())));
@@ -35,11 +35,11 @@ public class CommentShellCommands {
     @Transactional
     @ShellMethod(value = "Change comment for book command", key = {"comment change", "c change"})
     public void changeComment(long commentId, String newText) {
-        Optional<Comment> comment = dbCommentRepository.getComment(commentId);
+        Optional<Comment> comment = dbCommentService.getComment(commentId);
 
         if (comment.isPresent()) {
             comment.get().setText(newText);
-            dbCommentRepository.changeComment(comment.get());
+            dbCommentService.changeComment(comment.get());
         } else {
             throw new CommentShellException(String.format("Комментарий %d не найден", commentId));
         }
@@ -48,10 +48,10 @@ public class CommentShellCommands {
     @Transactional
     @ShellMethod(value = "Delete comment for book command", key = {"comment delete", "c del"})
     public void deleteComment(long commentId) {
-        Optional<Comment> comment = dbCommentRepository.getComment(commentId);
+        Optional<Comment> comment = dbCommentService.getComment(commentId);
 
         if (comment.isPresent()) {
-            dbCommentRepository.deleteComment(comment.get());
+            dbCommentService.deleteComment(comment.get());
         } else {
             throw new CommentShellException(String.format("Комментарий %d не найден", commentId));
         }

@@ -5,7 +5,6 @@ import ru.tikskit.domain.Author;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -27,16 +26,12 @@ public class AuthorDaoJpa implements AuthorDao {
     }
 
     @Override
-    @Transactional
     public List<Author> getAll() {
         return em.createQuery("select a from Author a", Author.class).getResultList();
     }
 
     @Override
-    @Transactional
     public Author getById(long id) {
-        TypedQuery<Author> query = em.createQuery("select a from Author a where a.id = :id", Author.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+        return em.find(Author.class, id);
     }
 }

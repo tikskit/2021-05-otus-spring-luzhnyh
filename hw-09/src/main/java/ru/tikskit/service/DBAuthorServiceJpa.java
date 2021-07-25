@@ -1,8 +1,8 @@
-package ru.tikskit.repository;
+package ru.tikskit.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.domain.Author;
@@ -10,13 +10,13 @@ import ru.tikskit.domain.Author;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class DBAuthorRepositoryJpa implements DBAuthorRepository {
+@Service
+public class DBAuthorServiceJpa implements DBAuthorService {
     private static final Logger logger = LoggerFactory.getLogger(AuthorDaoJpa.class);
 
     private final AuthorDao authorDao;
 
-    public DBAuthorRepositoryJpa(AuthorDao authorDao) {
+    public DBAuthorServiceJpa(AuthorDao authorDao) {
         this.authorDao = authorDao;
     }
 

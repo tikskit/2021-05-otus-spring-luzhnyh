@@ -6,7 +6,6 @@ import ru.tikskit.domain.Genre;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -20,22 +19,17 @@ public class GenreDaoJpa implements GenreDao {
     }
 
     @Override
-    @Transactional
     public Genre getById(long id) {
-        TypedQuery<Genre> query = em.createQuery("select g from Genre g where g.id = :id", Genre.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+        return em.find(Genre.class, id);
     }
 
     @Override
-    @Transactional
     public Genre insert(Genre genre) {
         em.persist(genre);
         return genre;
     }
 
     @Override
-    @Transactional
     public List<Genre> getAll() {
         TypedQuery<Genre> query = em.createQuery("select g from Genre g", Genre.class);
         return query.getResultList();

@@ -35,7 +35,6 @@ public class BookDaoJpa implements BookDao {
     }
 
     @Override
-    @Transactional
     public List<Book> getAll() {
         TypedQuery<Book> query = em.createQuery(
                 "select b from Book b join fetch b.genre g join fetch b.author a",
@@ -44,7 +43,6 @@ public class BookDaoJpa implements BookDao {
     }
 
     @Override
-    @Transactional
     public Book getById(long id) {
         TypedQuery<Book> query = em.createQuery(
                 "select b from Book b join fetch b.genre g join fetch b.author a where b.id = :id",
