@@ -11,7 +11,6 @@ import ru.tikskit.service.DBBookService;
 import ru.tikskit.service.DBGenreService;
 import ru.tikskit.service.Output;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,17 +76,5 @@ public class BookShellCommands {
         }
 
         dbBookService.changeBook(new Book(id, name, author.get(), genre.get(), null));
-    }
-
-    @Transactional
-    @ShellMethod(value = "Show book comments", key = {"show comments", "b comments"})
-    public void showComments(long bookId) {
-        Optional<Book> book = dbBookService.getBook(bookId);
-        if (book.isPresent()) {
-            output.println("Комментарии к книге:" + System.lineSeparator());
-            book.get().getComments().forEach(c -> output.println("\t" + c.getText()));
-        } else {
-            throw new BookShellException(String.format("Книга %d отссутствует в БД", bookId));
-        }
     }
 }

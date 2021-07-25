@@ -56,4 +56,16 @@ public class CommentShellCommands {
             throw new CommentShellException(String.format("Комментарий %d не найден", commentId));
         }
     }
+
+    @Transactional
+    @ShellMethod(value = "Show book comments", key = {"show comments", "b comments"})
+    public void showComments(long bookId) {
+        Optional<Book> book = dbBookService.getBook(bookId);
+        if (book.isPresent()) {
+            output.println("Комментарии к книге:" + System.lineSeparator());
+            book.get().getComments().forEach(c -> output.println("\t" + c.getText()));
+        } else {
+            throw new BookShellException(String.format("Книга %d отсутствует в БД", bookId));
+        }
+    }
 }
