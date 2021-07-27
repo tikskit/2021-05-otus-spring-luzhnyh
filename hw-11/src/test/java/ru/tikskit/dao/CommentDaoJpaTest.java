@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-@Import({CommentDaoJpa.class, BookDaoJpa.class})
+@Import({BookDaoJpa.class})
 class CommentDaoJpaTest {
     @Autowired
     private TestEntityManager em;
@@ -89,7 +89,7 @@ class CommentDaoJpaTest {
         long commentId = blackRelay.getComments().get(0).getId();
         Comment current = commentDao.getById(commentId);
         current.setText("Прочитал, очень понравилось");
-        commentDao.update(current);
+        commentDao.save(current);
 
         em.flush();
         em.clear();

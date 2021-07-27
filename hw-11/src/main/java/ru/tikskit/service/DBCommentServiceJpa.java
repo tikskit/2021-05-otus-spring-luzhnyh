@@ -54,7 +54,7 @@ public class DBCommentServiceJpa implements DBCommentService {
     @Override
     public Comment changeComment(Comment comment) {
         try {
-            Comment updated = commentDao.update(comment);
+            Comment updated = commentDao.save(comment);
             logger.info("Comment updated {}", updated);
             return updated;
         } catch (Exception e) {

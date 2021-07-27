@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.dao.BookDao;
 import ru.tikskit.dao.BookDaoJpa;
-import ru.tikskit.dao.CommentDaoJpa;
 import ru.tikskit.dao.GenreDao;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-@Import({DBCommentServiceJpa.class, DBBookServiceJpa.class, CommentDaoJpa.class, BookDaoJpa.class})
+@Import({DBCommentServiceJpa.class, DBBookServiceJpa.class, BookDaoJpa.class})
 class DBCommentServiceJpaTest {
     @Autowired
     private TestEntityManager em;

@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
-@Import({BookDaoJpa.class, CommentDaoJpa.class})
+@Import({BookDaoJpa.class})
 class BookDaoJpaTest {
 
     @Autowired
