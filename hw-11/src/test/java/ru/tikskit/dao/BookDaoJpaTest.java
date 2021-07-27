@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
-@Import({BookDaoJpa.class, GenreDaoJpa.class, AuthorDaoJpa.class, CommentDaoJpa.class})
+@Import({BookDaoJpa.class, GenreDaoJpa.class, CommentDaoJpa.class})
 class BookDaoJpaTest {
 
     @Autowired
@@ -36,7 +36,7 @@ class BookDaoJpaTest {
     @Test
     public void insertShouldCreateOneBook() {
         Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
-        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Book expectedBook = bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
 
         assertThat(expectedBook.getId()).
@@ -51,7 +51,7 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreIsViolated() {
-        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", author, null, null);
 
@@ -76,7 +76,7 @@ class BookDaoJpaTest {
     @Test
     public void throwsExceptionWhenUniqueAuthorConstraintIsViolated() {
         Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
-        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
         Book again = new Book(0, "Черная эстафета", author, genre, null);
@@ -93,8 +93,8 @@ class BookDaoJpaTest {
         Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
         Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
 
         List<Book> expectedBooks = List.of(
                 new Book(0, "Черная эстафета", vasilyev, sciFi, null),
@@ -130,8 +130,8 @@ class BookDaoJpaTest {
         Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
         Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
 
         Book initBook = bookDao.insert(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
 
@@ -151,8 +151,8 @@ class BookDaoJpaTest {
         Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
         Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
 
         bookDao.insert(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
         Book deletedBook = bookDao.insert(new Book(0, "Предел", lukyanenko, fantasy, null));
@@ -170,7 +170,7 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreViolated() {
-        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", vasilyev, null, null);
         assertThatThrownBy(() -> bookDao.insert(book)).
@@ -197,8 +197,8 @@ class BookDaoJpaTest {
         Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
         Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.insert(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.insert(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
 
         Book blackRelay = bookDao.insert(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
         Book darkness = bookDao.insert(new Book(0, "Тьма", lukyanenko, fantasy, null));
@@ -215,7 +215,7 @@ class BookDaoJpaTest {
     @Test
     public void getBookComments() {
         Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
-        Author author = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Book book = bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
 
         List<Comment> expected = List.of(

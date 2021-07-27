@@ -1,14 +1,8 @@
 package ru.tikskit.dao;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.tikskit.domain.Author;
 
-import java.util.List;
+public interface AuthorDao extends JpaRepository<Author, Long> {
 
-public interface AuthorDao {
-
-    Author insert(Author author);
-
-    List<Author> getAll();
-
-    Author getById(long id);
 }

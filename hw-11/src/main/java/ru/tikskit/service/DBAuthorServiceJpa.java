@@ -2,6 +2,7 @@ package ru.tikskit.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.dao.AuthorDaoJpa;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @Service
 public class DBAuthorServiceJpa implements DBAuthorService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthorDaoJpa.class);
+    private static final Logger logger = LoggerFactory.getLogger(DBAuthorServiceJpa.class);
 
     private final AuthorDao authorDao;
 
@@ -35,7 +36,7 @@ public class DBAuthorServiceJpa implements DBAuthorService {
     @Override
     public Author saveAuthor(Author author) {
         try {
-            Author res = authorDao.insert(author);
+            Author res = authorDao.save(author);
             logger.info("Author added {}", res);
             return res;
         } catch (Exception e) {
@@ -47,7 +48,7 @@ public class DBAuthorServiceJpa implements DBAuthorService {
     @Override
     public List<Author> getAll() {
         try {
-            return authorDao.getAll();
+            return authorDao.findAll();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return List.of();

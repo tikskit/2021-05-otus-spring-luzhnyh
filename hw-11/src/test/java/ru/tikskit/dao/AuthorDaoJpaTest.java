@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с авторами должно")
 @DataJpaTest
-@Import(AuthorDaoJpa.class)
 class AuthorDaoJpaTest {
 
     @Autowired
@@ -28,7 +27,7 @@ class AuthorDaoJpaTest {
     @DisplayName("устанавливать идентификатор объекта при его сохранении в БД")
     @Test
     public void checkSavingAuthorSetsId() {
-        Author expected = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author expected = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expected.getId()).
                 as("check that id is assigned now").
@@ -39,7 +38,7 @@ class AuthorDaoJpaTest {
     @DisplayName("добавлять методом insert одного автора")
     @Test
     public void insertShouldCreateOneAuthor() {
-        Author expectedAuthor = authorDao.insert(new Author(0, "Васильев", "Владимир"));
+        Author expectedAuthor = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expectedAuthor.getId()).
                 as("check that id is assigned now").
@@ -62,7 +61,7 @@ class AuthorDaoJpaTest {
             expectedTuples.add(new Tuple(author.getSurname(), author.getName()));
         }
 
-        List<Author> actualAuthors = authorDao.getAll();
+        List<Author> actualAuthors = authorDao.findAll();
         assertThat(actualAuthors).
                 extracting("surname", "name").
                 as("check that only genres we've just added exist").
