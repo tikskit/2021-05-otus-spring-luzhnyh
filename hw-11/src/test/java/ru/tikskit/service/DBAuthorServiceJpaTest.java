@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.domain.Author;
-import ru.tikskit.service.DBAuthorService;
-import ru.tikskit.service.DBAuthorServiceJpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Сервис для работы с авторами должен")
 @DataJpaTest
-@Import({DBAuthorServiceJpa.class, AuthorDaoJpa.class})
+@Import({DBAuthorServiceJpa.class})
 class DBAuthorServiceJpaTest {
 
     @Autowired

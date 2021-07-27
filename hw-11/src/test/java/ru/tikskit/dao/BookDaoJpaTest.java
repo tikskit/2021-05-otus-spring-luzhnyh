@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
-@Import({BookDaoJpa.class, GenreDaoJpa.class, CommentDaoJpa.class})
+@Import({BookDaoJpa.class, CommentDaoJpa.class})
 class BookDaoJpaTest {
 
     @Autowired
@@ -35,7 +35,7 @@ class BookDaoJpaTest {
     @DisplayName("добавлять методом insert одну книгу")
     @Test
     public void insertShouldCreateOneBook() {
-        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
         Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Book expectedBook = bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
 
@@ -63,7 +63,7 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorIsViolated() {
-        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", null, genre, null);
 
@@ -75,7 +75,7 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке вставить одну и ту же книгу два раза")
     @Test
     public void throwsExceptionWhenUniqueAuthorConstraintIsViolated() {
-        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
         Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
 
         bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
@@ -90,8 +90,8 @@ class BookDaoJpaTest {
     @DisplayName("вернуть все книги из таблицы books")
     @Test
     public void shouldReturnAllBooks() {
-        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
+        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
 
         Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
@@ -127,8 +127,8 @@ class BookDaoJpaTest {
     @DisplayName("фиксировать все изменения книги в БД")
     @Test
     public void updateShouldChangeAllFields() {
-        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
+        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
 
         Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
@@ -148,8 +148,8 @@ class BookDaoJpaTest {
     @DisplayName("удалять книги из таблицы books")
     @Test
     public void deletedBookShouldDisappearInDB() {
-        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
+        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
 
         Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
@@ -182,7 +182,7 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorViolated() {
-        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", null, sciFi, null);
         assertThatThrownBy(() -> bookDao.insert(book)).
@@ -194,8 +194,8 @@ class BookDaoJpaTest {
     @DisplayName("правильно выбирать книги с авторами и жанрами")
     @Test
     public void getAllShouldReturnBooksWithAuthorsAndGenres() {
-        Genre sciFi = genreDao.insert(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.insert(new Genre(0, "fantasy"));
+        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
 
         Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
@@ -214,7 +214,7 @@ class BookDaoJpaTest {
     @DisplayName("загружать комментарии к книге за один запрос")
     @Test
     public void getBookComments() {
-        Genre genre = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
         Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
         Book book = bookDao.insert(new Book(0, "Черная эстафета", author, genre, null));
 

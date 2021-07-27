@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-@Import({CommentDaoJpa.class, BookDaoJpa.class, GenreDaoJpa.class})
+@Import({CommentDaoJpa.class, BookDaoJpa.class})
 class CommentDaoJpaTest {
     @Autowired
     private TestEntityManager em;
@@ -47,8 +47,8 @@ class CommentDaoJpaTest {
         vasilyev = authorDao.save(new Author(0, "Васильев", "Сергей"));
         gaiman = authorDao.save(new Author(0, "Гейман", "Нил"));
 
-        sciFi = genreDao.insert(new Genre(0, "sci-fi"));
-        fantasy = genreDao.insert(new Genre(0, "fantasy"));
+        sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        fantasy = genreDao.save(new Genre(0, "fantasy"));
 
         blackRelay = bookDao.insert(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
         darkness = bookDao.insert(new Book(0, "Тьма", lukyanenko, fantasy, null));

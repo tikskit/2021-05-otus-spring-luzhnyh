@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.dao.BookDaoJpa;
-import ru.tikskit.dao.GenreDaoJpa;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
@@ -24,8 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для книг должен")
 @DataJpaTest
-@Import({DBBookServiceJpa.class, BookDaoJpa.class, DBAuthorServiceJpa.class, AuthorDaoJpa.class,
-        DBGenreServiceJpa.class, GenreDaoJpa.class})
+@Import({DBBookServiceJpa.class, BookDaoJpa.class, DBAuthorServiceJpa.class, DBGenreServiceJpa.class})
 class DBBookServiceJpaTest {
     @Autowired
     DBBookService dbBookService;

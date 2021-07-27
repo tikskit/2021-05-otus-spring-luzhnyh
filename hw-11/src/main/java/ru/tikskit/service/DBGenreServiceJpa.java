@@ -34,7 +34,7 @@ public class DBGenreServiceJpa implements DBGenreService {
     @Override
     public Genre saveGenre(Genre genre) {
         try {
-            Genre res = genreDao.insert(genre);
+            Genre res = genreDao.save(genre);
             logger.info("Genre added {}", res);
             return res;
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class DBGenreServiceJpa implements DBGenreService {
     @Override
     public List<Genre> getAll() {
         try {
-            return genreDao.getAll();
+            return genreDao.findAll();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return List.of();

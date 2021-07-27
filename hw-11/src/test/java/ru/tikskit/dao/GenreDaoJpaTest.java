@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с жанрами должно")
 @DataJpaTest
-@Import(GenreDaoJpa.class)
 class GenreDaoJpaTest {
 
     @Autowired
@@ -26,7 +25,7 @@ class GenreDaoJpaTest {
     @DisplayName("добавлять методом insert один жанр")
     @Test
     public void insertShouldCreateOneGenre() {
-        Genre expectedGenre = genreDao.insert(new Genre(0, "sci-fi"));
+        Genre expectedGenre = genreDao.save(new Genre(0, "sci-fi"));
 
         assertThat(expectedGenre.getId()).
                 as("check that id is assigned now").
@@ -46,7 +45,7 @@ class GenreDaoJpaTest {
             em.persist(new Genre(0, genre));
         }
 
-        List<Genre> actualGenres = genreDao.getAll();
+        List<Genre> actualGenres = genreDao.findAll();
         assertThat(actualGenres).
                 extracting("name", String.class).
                 as("check that exist only genres we've just added").

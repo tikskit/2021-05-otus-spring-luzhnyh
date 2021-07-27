@@ -1,14 +1,7 @@
 package ru.tikskit.dao;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.tikskit.domain.Genre;
 
-import java.util.List;
-
-public interface GenreDao {
-
-    Genre getById(long id);
-
-    Genre insert(Genre genre);
-
-    List<Genre> getAll();
+public interface GenreDao extends JpaRepository<Genre, Long> {
 }
