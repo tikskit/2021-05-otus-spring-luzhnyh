@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.dao.BookDao;
-import ru.tikskit.dao.BookDaoJpa;
 import ru.tikskit.dao.GenreDao;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
@@ -23,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-@Import({DBCommentServiceJpa.class, DBBookServiceJpa.class, BookDaoJpa.class})
+@Import({DBCommentServiceJpa.class, DBBookServiceJpa.class})
 class DBCommentServiceJpaTest {
     @Autowired
     private TestEntityManager em;
@@ -57,13 +56,13 @@ class DBCommentServiceJpaTest {
         sciFi = genreDao.save(new Genre(0, "sci-fi"));
         fantasy = genreDao.save(new Genre(0, "fantasy"));
 
-        blackRelay = bookDao.insert(
+        blackRelay = bookDao.save(
                 new Book(0, "Черная эстафета", vasilyev, sciFi,
                         List.of(
                                 new Comment(0, "Не читал, потому что не нравится"),
                                 new Comment(0, "Мало картинок")
                         )));
-        darkness = bookDao.insert(new Book(0, "Тьма", lukyanenko, fantasy, null));
+        darkness = bookDao.save(new Book(0, "Тьма", lukyanenko, fantasy, null));
     }
 
     @DisplayName("добавлять комментарий к книге")

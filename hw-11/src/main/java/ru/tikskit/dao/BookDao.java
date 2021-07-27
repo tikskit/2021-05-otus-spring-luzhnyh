@@ -1,18 +1,8 @@
 package ru.tikskit.dao;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.tikskit.domain.Book;
 
-import java.util.List;
+public interface BookDao extends JpaRepository<Book, Long> {
 
-public interface BookDao {
-
-    Book insert(Book book);
-
-    List<Book> getAll();
-
-    Book getById(long id);
-
-    Book update(Book book);
-
-    void delete(Book book);
 }

@@ -34,7 +34,7 @@ public class DBBookServiceJpa implements DBBookService {
     @Override
     public Book addBook(Book book) {
         try {
-            Book res = bookDao.insert(book);
+            Book res = bookDao.save(book);
             logger.info("Book added {}", res);
             return res;
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class DBBookServiceJpa implements DBBookService {
     @Override
     public Book changeBook(Book book) {
         try {
-            Book updated = bookDao.update(book);
+            Book updated = bookDao.save(book);
             logger.info("Book updated {}", updated);
             return updated;
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class DBBookServiceJpa implements DBBookService {
     @Override
     public List<Book> getAll() {
         try {
-            return bookDao.getAll();
+            return bookDao.findAll();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return List.of();

@@ -2,10 +2,8 @@ package ru.tikskit.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tikskit.dao.AuthorDao;
-import ru.tikskit.dao.AuthorDaoJpa;
 import ru.tikskit.domain.Author;
 
 import java.util.List;
