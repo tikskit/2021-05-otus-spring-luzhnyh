@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: librarytest
+  shell:
+    interactive:
+      enabled: false
+mongock:
+  runner-type: "ApplicationRunner" # default
+#  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.tikskit.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
