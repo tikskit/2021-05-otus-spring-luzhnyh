@@ -10,6 +10,7 @@ import ru.tikskit.domain.Genre;
 import ru.tikskit.repository.AuthorRepository;
 import ru.tikskit.repository.BookRepository;
 import ru.tikskit.repository.GenreRepository;
+import ru.tikskit.service.BookService;
 import ru.tikskit.service.Output;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class BookShellCommands {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final Output output;
+    private final BookService bookService;
 
 
     @ShellMethod(value = "Show all books command", key = {"book list", "b list"})
@@ -46,14 +48,14 @@ public class BookShellCommands {
 
     @ShellMethod(value = "Show book", key = {"book show", "b show"})
     public void showBook(String name, String authorSurname, String authorName) {
-        Optional<Book> book = findBook(name, authorSurname, authorName);
+        Optional<Book> book = bookService.findBook(name, authorSurname, authorName);
 
         output.println(book.orElse(null));
     }
 
     @ShellMethod(value = "Delete book", key = {"book del", "b del"})
     public void deleteBook(String name, String authorSurname, String authorName) {
-        Optional<Book> book = findBook(name, authorSurname, authorName);
+        Optional<Book> book = bookService.findBook(name, authorSurname, authorName);
         book.ifPresent(bookRepository::delete);
         output.println(String.format("Book was deleted: %s", book.orElse(null)));
     }
@@ -62,7 +64,7 @@ public class BookShellCommands {
     @Transactional
     public void changeBook(String name, String authorSurname, String authorName,
                            String newName, String newAuthorSurname, String newAuthorName, String newGenreName) {
-        Optional<Book> book = findBook(name, authorSurname, authorName);
+        Optional<Book> book = bookService.findBook(name, authorSurname, authorName);
         if (book.isEmpty()) {
             throw new BookShellException("Книга не найдена в БД");
         }
@@ -92,15 +94,5 @@ public class BookShellCommands {
             genre = Optional.of(genreRepository.save(new Genre(null, genreName)));
         }
         return genre;
-    }
-
-    private Optional<Book> findBook(String name, String authorSurname, String authorName) {
-        Optional<Author> author = authorRepository.findBySurnameAndName(authorSurname, authorName);
-
-        if (author.isEmpty()) {
-            throw new BookShellException(String.format("Автор %s %s не найден в БД", authorSurname, authorName));
-        }
-
-        return bookRepository.findByAuthorAndName(author.get(), name);
     }
 }

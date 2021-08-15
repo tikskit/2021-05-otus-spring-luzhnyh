@@ -24,6 +24,8 @@ class BookRepositoryTest {
     private AuthorRepository authorRepository;
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @BeforeEach
     public void setUp() {
@@ -38,15 +40,14 @@ class BookRepositoryTest {
         assertThat(lukyanenko).isPresent();
         assertThat(fantasy).isPresent();
 
-        Book death = new Book(null,
-                "Смерть",
-                lukyanenko.get(),
-                fantasy.get(),
+        List<Comment> comments = commentRepository.saveAll(
                 List.of(
                         new Comment(null, "Хорошая книга"),
                         new Comment(null, "Хорошее качество бумаги")
                 )
         );
+
+        Book death = new Book(null, "Смерть", lukyanenko.get(), fantasy.get(), comments);
         Book expected = booksRepository.save(death);
 
         Optional<Book> actual = booksRepository.findById(expected.getId());
@@ -61,18 +62,17 @@ class BookRepositoryTest {
         assertThat(lukyanenko).isPresent();
         assertThat(fantasy).isPresent();
 
-        Book death = new Book(null,
-                "Смерть",
-                lukyanenko.get(),
-                fantasy.get(),
+        List<Comment> comments = commentRepository.saveAll(
                 List.of(
                         new Comment(null, "Хорошая книга"),
                         new Comment(null, "Хорошее качество бумаги")
                 )
         );
+
+        Book death = new Book(null, "Смерть", lukyanenko.get(), fantasy.get(),comments);
         Book expected = booksRepository.save(death);
 
-        Optional<Book> actual = booksRepository.findByAuthorAndName(lukyanenko.get(), "Смерть");
+        Optional<Book> actual = booksRepository.findByAuthorAndNameIgnoreCase(lukyanenko.get(), "смерть");
         assertThat(actual).isPresent().get().usingRecursiveComparison().isEqualTo(expected);
     }
 }

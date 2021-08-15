@@ -7,5 +7,5 @@ import ru.tikskit.domain.Book;
 import java.util.Optional;
 
 public interface BookRepository extends MongoRepository<Book, String> {
-    Optional<Book> findByAuthorAndName(Author author, String name);
+    Optional<Book> findByAuthorAndNameIgnoreCase(Author author, String name);
 }
