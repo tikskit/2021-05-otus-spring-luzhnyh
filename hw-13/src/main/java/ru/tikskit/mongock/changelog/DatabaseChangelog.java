@@ -53,12 +53,4 @@ public class DatabaseChangelog {
         var fantasyDoc = new Document().append("name", "fantasy");
         genresCollection.insertMany(List.of(sciFiDoc, fantasyDoc));
     }
-
-    @ChangeSet(order = "004", id = "insertAuthors", author = "tikskit")
-    public void insertAuthors(MongoDatabase db) {
-        MongoCollection<Document> authorsCollection = db.getCollection("authors");
-        var lukyanenko = new Document().append("surname", "Лукьяненко").append("name", "Сергей");
-        var vasilyev = new Document().append("surname", "Васильев").append("name", "Владимир");
-        authorsCollection.insertMany(List.of(lukyanenko, vasilyev));
-    }
 }

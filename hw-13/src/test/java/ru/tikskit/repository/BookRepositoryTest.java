@@ -30,6 +30,11 @@ class BookRepositoryTest {
     @BeforeEach
     public void setUp() {
         booksRepository.deleteAll();
+        genreRepository.deleteAll();
+        authorRepository.deleteAll();
+
+        genreRepository.save(new Genre(null, "fantasy"));
+        authorRepository.save(new Author(null, "Лукьяненко", "Сергей"));
     }
 
     @DisplayName("сохранять в БД книгу")
@@ -57,6 +62,7 @@ class BookRepositoryTest {
     @DisplayName("искать книгу по автору и наименованию")
     @Test
     public void shouldFindBookByAuthorAndName() {
+
         Optional<Author> lukyanenko = authorRepository.findBySurnameAndName("Лукьяненко", "Сергей");
         Optional<Genre> fantasy = genreRepository.findByName("fantasy");
         assertThat(lukyanenko).isPresent();
