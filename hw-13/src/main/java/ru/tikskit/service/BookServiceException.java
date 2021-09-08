@@ -1,6 +1,6 @@
 package ru.tikskit.service;
 
-public class BookServiceException extends RuntimeException{
+public class BookServiceException extends RuntimeException {
     public BookServiceException() {
     }
 
