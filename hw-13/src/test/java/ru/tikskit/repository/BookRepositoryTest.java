@@ -24,8 +24,6 @@ class BookRepositoryTest {
     private AuthorRepository authorRepository;
     @Autowired
     private GenreRepository genreRepository;
-    @Autowired
-    private CommentRepository commentRepository;
 
     @BeforeEach
     public void setUp() {
@@ -45,11 +43,9 @@ class BookRepositoryTest {
         assertThat(lukyanenko).isPresent();
         assertThat(fantasy).isPresent();
 
-        List<Comment> comments = commentRepository.saveAll(
-                List.of(
-                        new Comment(null, "Хорошая книга"),
-                        new Comment(null, "Хорошее качество бумаги")
-                )
+        List<Comment> comments = List.of(
+                new Comment(null, "Хорошая книга"),
+                new Comment(null, "Хорошее качество бумаги")
         );
 
         Book death = new Book(null, "Смерть", lukyanenko.get(), fantasy.get(), comments);
@@ -68,11 +64,9 @@ class BookRepositoryTest {
         assertThat(lukyanenko).isPresent();
         assertThat(fantasy).isPresent();
 
-        List<Comment> comments = commentRepository.saveAll(
-                List.of(
-                        new Comment(null, "Хорошая книга"),
-                        new Comment(null, "Хорошее качество бумаги")
-                )
+        List<Comment> comments = List.of(
+                new Comment(null, "Хорошая книга"),
+                new Comment(null, "Хорошее качество бумаги")
         );
 
         Book death = new Book(null, "Смерть", lukyanenko.get(), fantasy.get(),comments);

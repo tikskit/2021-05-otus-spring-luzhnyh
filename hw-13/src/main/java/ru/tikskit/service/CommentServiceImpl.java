@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
 import ru.tikskit.repository.BookRepository;
-import ru.tikskit.repository.CommentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    private final CommentRepository commentRepository;
     private final BookRepository bookRepository;
     private final BookService bookService;
 
@@ -37,7 +35,6 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = findBookComment(book.get(), commentStartsWith, commentEndsWith);
 
             comment.setText(newCommentText);
-            commentRepository.save(comment);
             bookRepository.save(book.get());
         }
         return book;
@@ -52,7 +49,6 @@ public class CommentServiceImpl implements CommentService {
         if (book.isPresent()) {
             Comment comment = findBookComment(book.get(), commentStartsWith, commentEndsWith);
             book.get().getComments().remove(comment);
-            commentRepository.delete(comment);
             bookRepository.save(book.get());
         }
 
@@ -60,9 +56,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void addComment2Book(String commentText, Book book) {
-        Comment newComment = commentRepository.save(new Comment(null, commentText));
         List<Comment> comments = book.getComments() == null ? new ArrayList<>() : book.getComments();
-        comments.add(newComment);
+        comments.add(new Comment(null, commentText));
         book.setComments(comments);
         bookRepository.save(book);
     }
