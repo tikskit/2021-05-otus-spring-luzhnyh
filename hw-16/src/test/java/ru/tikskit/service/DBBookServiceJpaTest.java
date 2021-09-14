@@ -112,6 +112,22 @@ class DBBookServiceJpaTest {
         assertThat(after).containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    @DisplayName("правильно удалять книги из БД по идентификатору")
+    @Test
+    public void entityDisappearsWhenItDeletedById() {
+        List<Book> before = dbBookService.getAll();
+
+        dbBookService.deleteBookById(darkness.getId());
+
+        List<Book> after = dbBookService.getAll();
+
+        List<Book> expected = new ArrayList<>(before);
+        expected.remove(darkness);
+
+        assertThat(after).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+
     @DisplayName("правильно изменять книги в БД")
     @Test
     public void bookChangedProperly() {

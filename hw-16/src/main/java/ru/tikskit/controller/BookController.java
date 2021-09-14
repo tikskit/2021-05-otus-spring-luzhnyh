@@ -16,9 +16,7 @@ import ru.tikskit.service.DBAuthorService;
 import ru.tikskit.service.DBBookService;
 import ru.tikskit.service.DBGenreService;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class BookController {
