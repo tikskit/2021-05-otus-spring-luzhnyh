@@ -15,5 +15,7 @@ public interface DBBookService {
 
     void deleteBook(Book book);
 
+    void deleteBookById(long id);
+
     List<Book> getAll();
 }

@@ -67,6 +67,17 @@ public class DBBookServiceJpa implements DBBookService {
     }
 
     @Override
+    public void deleteBookById(long id) {
+        try {
+            bookDao.deleteById(id);
+            logger.info("Book deleted {}", id);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
     public List<Book> getAll() {
         try {
             return bookDao.findAll();

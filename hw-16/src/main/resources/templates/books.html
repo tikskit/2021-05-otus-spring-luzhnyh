@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+</head>
+<body>
+<div>
+    <form method="get" action="/deletebooks">
+        <table border="1">
+            <thead>
+            <tr>
+                <td>&nbsp;</td>
+                <td>Книга</td>
+                <td>Автор</td>
+                <td>Жанр</td>
+                <td>&nbsp;</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book: ${books}">
+                <td><input type="checkbox" name="bookid" th:value="${book.id}"></td>
+                <td th:text="${book.name}">Смерть</td>
+                <td th:text="${book.author.surname}">Лукьяненко</td>
+                <td th:text="${book.genre.name}">Фантастика</td>
+                <td><a href="/editbook.html" th:href="@{/editbook(id=${book.id})}">Изменить</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="submit" value="Удалить выбранное">
+    </form>
+</div>
+
+<div>
+    <a href="/addbook">Добавить книгу</a>
+</div>
+
+</body>
+</html>
