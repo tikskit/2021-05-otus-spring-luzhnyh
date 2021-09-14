@@ -90,6 +90,7 @@
         <module>hw-09</module>
         <module>hw-11</module>
         <module>hw-13</module>
+        <module>hw-16</module>
     </modules>
 
     <build>
