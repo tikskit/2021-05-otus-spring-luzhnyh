@@ -21,35 +21,20 @@ public class DBGenreServiceJpa implements DBGenreService {
 
     @Override
     public Optional<Genre> getGenre(long id) {
-        try {
-            Optional<Genre> genreOptional =  Optional.of(genreDao.getById(id));
-            logger.info("Genre got from db: {}", genreOptional.get());
-            return genreOptional;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
+        Optional<Genre> genreOptional =  Optional.of(genreDao.getById(id));
+        logger.info("Genre got from db: {}", genreOptional.get());
+        return genreOptional;
     }
 
     @Override
     public Genre saveGenre(Genre genre) {
-        try {
-            Genre res = genreDao.save(genre);
-            logger.info("Genre added {}", res);
-            return res;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        Genre res = genreDao.save(genre);
+        logger.info("Genre added {}", res);
+        return res;
     }
 
     @Override
     public List<Genre> getAll() {
-        try {
-            return genreDao.findAll();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return List.of();
-        }
+        return genreDao.findAll();
     }
 }

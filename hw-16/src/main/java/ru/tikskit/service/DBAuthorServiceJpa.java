@@ -21,35 +21,20 @@ public class DBAuthorServiceJpa implements DBAuthorService {
 
     @Override
     public Optional<Author> getAuthor(long id) {
-        try {
-            Optional<Author> authorOptional = Optional.of(authorDao.getById(id));
-            logger.info("Auhtor got from db: {}", authorOptional.get());
-            return authorOptional;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
+        Optional<Author> authorOptional = Optional.of(authorDao.getById(id));
+        logger.info("Auhtor got from db: {}", authorOptional.get());
+        return authorOptional;
     }
 
     @Override
     public Author saveAuthor(Author author) {
-        try {
-            Author res = authorDao.save(author);
-            logger.info("Author added {}", res);
-            return res;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        Author res = authorDao.save(author);
+        logger.info("Author added {}", res);
+        return res;
     }
 
     @Override
     public List<Author> getAll() {
-        try {
-            return authorDao.findAll();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return List.of();
-        }
+        return authorDao.findAll();
     }
 }

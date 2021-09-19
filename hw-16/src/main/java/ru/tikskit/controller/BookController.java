@@ -4,11 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Genre;
@@ -52,23 +50,30 @@ public class BookController {
         Genre genre = genreService.getGenre(genreId).orElseThrow(GenreNotFoundException::new);
 
         Book book = new Book(0, bookname, author, genre, null);
-        bookService.addBook(book);
+        try {
+            bookService.addBook(book);
+        } catch (Exception e) {
+            throw new BookCrudException(e);
+        }
         return "books";
     }
 
     @GetMapping("/deletebooks")
     @Transactional
     public String deleteBooks(@RequestParam("bookid") List<Long> ids) {
-        for (Long id : ids) {
-            bookService.deleteBookById(id);
+        try {
+            for (Long id : ids) {
+                bookService.deleteBookById(id);
+            }
+        } catch (Exception e) {
+            throw new BookCrudException(e);
         }
         return "books";
     }
 
     @GetMapping("/editbook")
     public String editBook(@RequestParam("id") long id, Model model) {
-        Book book = bookService.getBook(id).orElseThrow(BookNotFoundException::new);
-
+        Book book = bookService.getBook(id).orElseThrow(BookCrudException::new);
         model.addAttribute("book", book);
         model.addAttribute("authors", authorService.getAll());
         model.addAttribute("genres", genreService.getAll());
@@ -80,11 +85,15 @@ public class BookController {
                             @RequestParam("authorid") long authorId, @RequestParam("genreid") long genreId) {
         Author author = authorService.getAuthor(authorId).orElseThrow(AuthorNotFoundException::new);
         Genre genre = genreService.getGenre(genreId).orElseThrow(GenreNotFoundException::new);
-        Book book = bookService.getBook(bookid).orElseThrow(BookNotFoundException::new);
+        Book book = bookService.getBook(bookid).orElseThrow(BookCrudException::new);
         book.setName(bookname);
         book.setAuthor(author);
         book.setGenre(genre);
-        bookService.changeBook(book);
+        try {
+            bookService.changeBook(book);
+        } catch (Exception e) {
+            throw new BookCrudException(e);
+        }
         return "books";
     }
 }

@@ -21,69 +21,39 @@ public class DBBookServiceJpa implements DBBookService {
 
     @Override
     public Optional<Book> getBook(long id) {
-        try {
-            Optional<Book> bookOptional = Optional.of(bookDao.getById(id));
-            logger.info("Book got from db: {}", bookOptional.get());
-            return bookOptional;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
+        Optional<Book> bookOptional = Optional.of(bookDao.getById(id));
+        logger.info("Book got from db: {}", bookOptional.get());
+        return bookOptional;
     }
 
     @Override
     public Book addBook(Book book) {
-        try {
-            Book res = bookDao.save(book);
-            logger.info("Book added {}", res);
-            return res;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        Book res = bookDao.save(book);
+        logger.info("Book added {}", res);
+        return res;
     }
 
     @Override
     public Book changeBook(Book book) {
-        try {
-            Book updated = bookDao.save(book);
-            logger.info("Book updated {}", updated);
-            return updated;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        Book updated = bookDao.save(book);
+        logger.info("Book updated {}", updated);
+        return updated;
     }
 
     @Override
     public void deleteBook(Book book) {
-        try {
-            bookDao.delete(book);
-            logger.info("Book deleted {}", book);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        bookDao.delete(book);
+        logger.info("Book deleted {}", book);
     }
 
     @Override
     public void deleteBookById(long id) {
-        try {
-            bookDao.deleteById(id);
-            logger.info("Book deleted {}", id);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        bookDao.deleteById(id);
+        logger.info("Book deleted {}", id);
     }
 
     @Override
     public List<Book> getAll() {
-        try {
-            return bookDao.findAll();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return List.of();
-        }
+        return bookDao.findAll();
     }
 }

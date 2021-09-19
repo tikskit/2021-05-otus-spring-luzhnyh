@@ -26,14 +26,9 @@ public class DBCommentServiceJpa implements DBCommentService {
 
     @Override
     public Optional<Comment> getComment(long id) {
-        try {
-            Optional<Comment> commentOptional = Optional.of(commentDao.getById(id));
-            logger.info("Comment got from db: {}", commentOptional.get());
-            return commentOptional;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
+        Optional<Comment> commentOptional = Optional.of(commentDao.getById(id));
+        logger.info("Comment got from db: {}", commentOptional.get());
+        return commentOptional;
     }
 
     @Transactional
@@ -53,24 +48,14 @@ public class DBCommentServiceJpa implements DBCommentService {
 
     @Override
     public Comment changeComment(Comment comment) {
-        try {
-            Comment updated = commentDao.save(comment);
-            logger.info("Comment updated {}", updated);
-            return updated;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        Comment updated = commentDao.save(comment);
+        logger.info("Comment updated {}", updated);
+        return updated;
     }
 
     @Override
     public void deleteComment(Comment comment) {
-        try {
-            commentDao.delete(comment);
-            logger.info("Comment deleted {}", comment);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        commentDao.delete(comment);
+        logger.info("Comment deleted {}", comment);
     }
 }
