@@ -91,6 +91,7 @@
         <module>hw-11</module>
         <module>hw-13</module>
         <module>hw-16</module>
+        <module>hw-17</module>
     </modules>
 
     <build>

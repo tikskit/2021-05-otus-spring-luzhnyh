@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить книгу</title>
+</head>
+<body>
+<div>
+    <form action="/postbook" method="post">
+        <label for="bookname">Книга</label><input type="text" id="bookname" name="bookname"><br>
+        <label for="authorid">Автор</label>
+        <select id="authorid" name="authorid">
+            <option th:each="author: ${authors}" value="Пушкин" th:value="${author.id}" th:text="${author.surname}">
+                Александр Пушкин
+            </option>
+        </select><br>
+
+        <label for="genreid">Жанр</label>
+        <select id="genreid" name="genreid">
+            <option th:each="genre: ${genres}" value="Сказка" th:value="${genre.id}" th:text="${genre.name}">Сказка
+            </option>
+        </select><br>
+
+        <input type="submit" name="Создать">
+    </form>
+</div>
+</body>
+</html>
