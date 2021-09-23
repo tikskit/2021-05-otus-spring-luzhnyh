@@ -50,23 +50,15 @@ public class BookController {
         Genre genre = genreService.getGenre(genreId).orElseThrow(GenreNotFoundException::new);
 
         Book book = new Book(0, bookname, author, genre, null);
-        try {
-            bookService.addBook(book);
-        } catch (Exception e) {
-            throw new BookCrudException(e);
-        }
+        bookService.addBook(book);
         return "books";
     }
 
     @GetMapping("/deletebooks")
     @Transactional
     public String deleteBooks(@RequestParam("bookid") List<Long> ids) {
-        try {
-            for (Long id : ids) {
-                bookService.deleteBookById(id);
-            }
-        } catch (Exception e) {
-            throw new BookCrudException(e);
+        for (Long id : ids) {
+            bookService.deleteBookById(id);
         }
         return "books";
     }
@@ -89,11 +81,7 @@ public class BookController {
         book.setName(bookname);
         book.setAuthor(author);
         book.setGenre(genre);
-        try {
-            bookService.changeBook(book);
-        } catch (Exception e) {
-            throw new BookCrudException(e);
-        }
+        bookService.changeBook(book);
         return "books";
     }
 }
