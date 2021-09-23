@@ -1,6 +1,5 @@
 package ru.tikskit.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -17,13 +16,13 @@ import ru.tikskit.service.DBGenreService;
 import java.util.List;
 
 @Controller
-public class BookController {
+public class BookPagesController {
 
     private final DBBookService bookService;
     private final DBGenreService genreService;
     private final DBAuthorService authorService;
 
-    public BookController(DBBookService bookService, DBGenreService genreService, DBAuthorService authorService) {
+    public BookPagesController(DBBookService bookService, DBGenreService genreService, DBAuthorService authorService) {
         this.bookService = bookService;
         this.genreService = genreService;
         this.authorService = authorService;
@@ -66,22 +65,25 @@ public class BookController {
     @GetMapping("/editbook")
     public String editBook(@RequestParam("id") long id, Model model) {
         Book book = bookService.getBook(id).orElseThrow(BookCrudException::new);
+
         model.addAttribute("book", book);
         model.addAttribute("authors", authorService.getAll());
         model.addAttribute("genres", genreService.getAll());
+        model.addAttribute("comments", book.getComments());
         return "editbook";
     }
 
     @PostMapping("/patchbook")
-    public String patchBook(@RequestParam("bookid") long bookid, @RequestParam("bookname") String bookname,
+    public String patchBook(@RequestParam("bookid") long bookId, @RequestParam("bookname") String bookname,
                             @RequestParam("authorid") long authorId, @RequestParam("genreid") long genreId) {
         Author author = authorService.getAuthor(authorId).orElseThrow(AuthorNotFoundException::new);
         Genre genre = genreService.getGenre(genreId).orElseThrow(GenreNotFoundException::new);
-        Book book = bookService.getBook(bookid).orElseThrow(BookCrudException::new);
+        Book book = bookService.getBook(bookId).orElseThrow(BookCrudException::new);
         book.setName(bookname);
         book.setAuthor(author);
         book.setGenre(genre);
         bookService.changeBook(book);
         return "books";
     }
+
 }

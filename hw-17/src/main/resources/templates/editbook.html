@@ -24,8 +24,53 @@
             </option>
         </select><br>
 
-        <input type="submit" name="Изменить">
+        <input type="submit">
     </form>
 </div>
+<div>
+    Добавить комментарий:
+    <form method="post">
+        <label for="commentText">Текст:</label><input type="text" id="commentText" name="text">
+        <input type="button" onclick="addComment()" value="Добавить">
+    </form>
+</div>
+<div>
+    Все комментарии:
+    <table border="1" id="commentsTable">
+        <thead>
+
+        </thead>
+        <tbody>
+            <tr th:each="comment: ${comments}">
+                <td th:text="${comment.text}">Текст камента</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:inline="javascript">
+
+    function addComment() {
+        const bookId = /*[[${book.id}]]*/0;
+        const commentText = document.getElementById("commentText").value;
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const json = JSON.parse(xhr.responseText);
+                const commentsTable = document.getElementById("commentsTable");
+                var newRow = commentsTable.insertRow(-1);
+                var newCell = newRow.insertCell(0);
+                var newText = document.createTextNode(json.text);
+                newCell.appendChild(newText)
+
+            }
+        }
+        const formData = new FormData();
+        formData.append("text", commentText);
+        xhr.open('POST', '/api/book/'+ bookId +'/comment');
+        xhr.send(formData);
+    }
+
+</script>
 </body>
 </html>
