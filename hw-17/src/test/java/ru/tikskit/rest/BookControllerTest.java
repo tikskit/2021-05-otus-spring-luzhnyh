@@ -65,7 +65,6 @@ public class BookControllerTest {
         fantasy = genreDao.save(new Genre(0, "fantasy"));
         lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
         skiFi = genreDao.save(new Genre(0, "sci-fi"));
-
     }
 
     @DisplayName("Должен возвращать все книги")
@@ -188,4 +187,5 @@ public class BookControllerTest {
         em.flush();
         assertThat(bookDao.existsById(bookId)).isFalse();
     }
+
 }
