@@ -6,25 +6,25 @@
 </head>
 <body>
 <div>
-    <form action="/patchbook" method="post">
-        <input type="hidden" name="bookid" th:value="${book.id}">
+    <form id="bookfields">
+        <input type="hidden" id="bookid" name="bookid" value="0" th:value="${book.id}">
         <label for="bookname">Книга</label><input type="text" id="bookname" name="bookname" th:value="${book.name}"><br>
-        <label for="authorid">Автор</label>
-        <select id="authorid" name="authorid">
+        <label for="author">Автор</label>
+        <select id="author" name="authorid">
             <option th:each="author: ${authors}" value="Пушкин" th:value="${author.id}" th:text="${author.surname}"
                     th:selected="${author.id == book.author.id}">
                 Александр Пушкин
             </option>
         </select><br>
 
-        <label for="genreid">Жанр</label>
-        <select id="genreid" name="genreid">
+        <label for="genre">Жанр</label>
+        <select id="genre" name="genreid">
             <option th:each="genre: ${genres}" value="Сказка" th:value="${genre.id}" th:text="${genre.name}"
                     th:selected="${genre.id == book.genre.id}">Сказка
             </option>
         </select><br>
 
-        <input type="submit">
+        <input type="button" value="Отправить изменения" onclick="sendRequest()">
     </form>
 </div>
 <div>
@@ -68,6 +68,22 @@
         const formData = new FormData();
         formData.append("text", commentText);
         xhr.open('POST', '/api/book/'+ bookId +'/comment');
+        xhr.send(formData);
+    }
+
+    function sendRequest() {
+        const bookNameRef = document.getElementById("bookname");
+        const authorRef = document.getElementById("author");
+        const genreRef = document.getElementById("genre");
+
+        const bookId = /*[[${book.id}]]*/0;
+
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+        formData.append("name", bookNameRef.value);
+        formData.append("genreid", genreRef.value);
+        formData.append("authorid", authorRef.value);
+        xhr.open('PATCH', '/api/book/'+ bookId);
         xhr.send(formData);
     }
 

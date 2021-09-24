@@ -29,9 +29,7 @@ public class BookPagesController {
     }
 
     @GetMapping("/")
-    public String listPage(Model model) {
-        List<Book> allBooks = bookService.getAll();
-        model.addAttribute("books", allBooks);
+    public String listPage() {
         return "books";
     }
 

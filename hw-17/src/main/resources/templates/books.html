@@ -1,39 +1,51 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Books</title>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <div>
-    <form method="get" action="/deletebooks">
-        <table border="1">
-            <thead>
-            <tr>
-                <td>&nbsp;</td>
-                <td>Книга</td>
-                <td>Автор</td>
-                <td>Жанр</td>
-                <td>&nbsp;</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="book: ${books}">
-                <td><input type="checkbox" name="bookid" th:value="${book.id}"></td>
-                <td th:text="${book.name}">Смерть</td>
-                <td th:text="${book.author.surname}">Лукьяненко</td>
-                <td th:text="${book.genre.name}">Фантастика</td>
-                <td><a href="/editbook.html" th:href="@{/editbook(id=${book.id})}">Изменить</a></td>
-            </tr>
-            </tbody>
-        </table>
-        <input type="submit" value="Удалить выбранное">
-    </form>
+    <table class="booksTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
 
 <div>
     <a href="/addbook">Добавить книгу</a>
-</div>
 
+</div>
+<script>
+    $(function () {
+        $.get('/api/book').done(function (booksTable) {
+            booksTable.forEach(function (book) {
+                $('tbody').append(`
+                    <tr>
+                        <td>${book.id}</td>
+                        <td>${book.name}</td>
+                        <td><a href="/editbook?id=${book.id}">Изменить</a></td>
+                        <td><button value="button" onclick="onDelete(${book.id})">Удалить</button></td>
+                    </tr>
+                `)
+            });
+        })
+    });
+
+    function onDelete(bookid) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/api/book/'+ bookid);
+        xhr.send();
+    }
+</script>
 </body>
 </html>
