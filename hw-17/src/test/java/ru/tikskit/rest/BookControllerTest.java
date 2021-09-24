@@ -62,8 +62,9 @@ public class BookControllerTest {
     @BeforeEach
     public void setUp() {
         vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        fantasy = genreDao.save(new Genre(0, "fantasy"));
         lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
+
+        fantasy = genreDao.save(new Genre(0, "fantasy"));
         skiFi = genreDao.save(new Genre(0, "sci-fi"));
     }
 
@@ -184,8 +185,7 @@ public class BookControllerTest {
                 delete("/api/book/" + bookId)
         ).andExpect(status().is2xxSuccessful());
 
-        em.flush();
-        assertThat(bookDao.existsById(bookId)).isFalse();
+        assertThat(bookDao.findById(bookId)).isEmpty();
     }
 
 }
