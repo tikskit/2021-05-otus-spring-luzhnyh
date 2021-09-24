@@ -76,7 +76,6 @@ public class BookController {
     @DeleteMapping("/api/book/{bookid}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable("bookid") long bookId) {
-        List<Book> allById = bookDao.findAllById(List.of(bookId));
         bookDao.deleteById(bookId);
     }
 
