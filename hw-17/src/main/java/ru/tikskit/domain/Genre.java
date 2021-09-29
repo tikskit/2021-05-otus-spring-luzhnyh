@@ -10,12 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "genres")
+@Table(name = "genres", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 public class Genre {
 
     @Id

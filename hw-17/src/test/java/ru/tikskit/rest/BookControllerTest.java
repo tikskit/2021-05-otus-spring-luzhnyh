@@ -174,7 +174,7 @@ public class BookControllerTest {
         BookDto actualDto = bookConverter.toDto(actual);
         assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
     }
-/*
+    
     @DisplayName("Удалять книгу из БД")
     @Test
     @Transactional(readOnly = true)
@@ -187,5 +187,4 @@ public class BookControllerTest {
 
         assertThat(bookDao.findById(bookId)).isEmpty();
     }
-*/
 }
