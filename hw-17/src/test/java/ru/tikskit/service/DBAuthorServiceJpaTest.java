@@ -1,19 +1,18 @@
 package ru.tikskit.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.domain.Author;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис для работы с авторами должен")
 @DataJpaTest
@@ -22,47 +21,34 @@ class DBAuthorServiceJpaTest {
 
     @Autowired
     private DBAuthorService authorService;
-    @Autowired
-    private TestEntityManager em;
-
-    private Author lukyanenko;
-    private Author vasilyev;
-
-    @BeforeEach
-    public void setUp() {
-        lukyanenko = em.persist(new Author(0, "Лукьяненко", "Сергей"));
-        vasilyev = em.persist(new Author(0, "Васильев", "Сергей"));
-    }
+    @MockBean
+    private AuthorDao authorDao;
 
     @DisplayName("добавлять одного и только одного автора")
     @Test
     public void saveAuthorShouldInsertOneAuthor() {
-        List<Author> before = em.getEntityManager().createQuery("select a from Author a", Author.class).getResultList();
+        Author newAuthor = new Author(0, "Гейман", "Нил");
 
-        Author gaiman = authorService.saveAuthor(new Author(0, "Гейман", "Нил"));
+        Author persistAuthor = new Author(1, newAuthor.getSurname(), newAuthor.getName());
+        when(authorDao.save(newAuthor)).thenReturn(persistAuthor);
 
-        List<Author> now = em.getEntityManager().createQuery("select a from Author a", Author.class).getResultList();
+        authorService.saveAuthor(newAuthor);
 
-        List<Author> expected = new ArrayList<>(before);
-        expected.add(gaiman);
-
-        assertThat(now).containsExactlyInAnyOrderElementsOf(expected);
+        verify(authorDao, times(1)).save(newAuthor);
     }
 
     @DisplayName("правильно возвращать автора по идентификатору")
     @Test
     public void getAuthorShouldReturnProperEntity() {
-        Optional<Author> testLukyaninko = authorService.getAuthor(lukyanenko.getId());
-
-        assertThat(testLukyaninko.orElseGet(null)).usingRecursiveComparison().isEqualTo(lukyanenko);
+        when(authorDao.getById(10L)).thenReturn(new Author(10, "Лукьяненко", "Сергей"));
+        authorService.getAuthor(10);
+        verify(authorDao, times(1)).getById(10L);
     }
 
     @DisplayName("правильно выбирать всех авторов из таблицы authors")
     @Test
     public void getAllShouldReturnAllBooks() {
-        List<Author> expected = List.of(vasilyev, lukyanenko);
-
-        List<Author> actual = authorService.getAll();
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        authorService.getAll();
+        verify(authorDao, times(1)).findAll();
     }
 }
