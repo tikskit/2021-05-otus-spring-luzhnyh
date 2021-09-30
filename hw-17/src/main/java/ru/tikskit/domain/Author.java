@@ -2,6 +2,7 @@ package ru.tikskit.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -24,9 +26,11 @@ public class Author {
     private long id;
 
     @Column(name = "surname")
+    @EqualsAndHashCode.Include
     private String surname;
 
     @Column(name = "name")
+    @EqualsAndHashCode.Include
     private String name;
 
     /**

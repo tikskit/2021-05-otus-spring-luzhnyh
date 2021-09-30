@@ -2,80 +2,70 @@ package ru.tikskit.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-import ru.tikskit.dao.AuthorDao;
-import ru.tikskit.dao.BookDao;
-import ru.tikskit.dao.GenreDao;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
+import ru.tikskit.domain.BookBuilder;
 import ru.tikskit.domain.Genre;
 import ru.tikskit.rest.dto.AuthorConverter;
 import ru.tikskit.rest.dto.BookConverter;
 import ru.tikskit.rest.dto.BookDto;
 import ru.tikskit.rest.dto.GenreConverter;
+import ru.tikskit.service.DBAuthorService;
+import ru.tikskit.service.DBBookService;
+import ru.tikskit.service.DBGenreService;
 
-import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("REST контроллер книг")
 public class BookControllerTest {
+    @MockBean
+    private DBBookService bookService;
+    @MockBean
+    private DBAuthorService authorService;
+    @MockBean
+    private DBGenreService genreService;
+
+
     @Autowired
     private MockMvc mvc;
     @Autowired
-    private BookDao bookDao;
-    @Autowired
-    private AuthorDao authorDao;
-    @Autowired
-    private GenreDao genreDao;
-    @Autowired
     private BookConverter bookConverter;
-    @Autowired
-    private AuthorConverter authorConverter;
-    @Autowired
-    private GenreConverter genreConverter;
-    @Autowired
-    private EntityManager em;
-
-    private Author vasilyev;
-    private Genre fantasy;
-    private Author lukyanenko;
-    private Genre skiFi;
-
-    @BeforeEach
-    public void setUp() {
-        vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
-
-        fantasy = genreDao.save(new Genre(0, "fantasy"));
-        skiFi = genreDao.save(new Genre(0, "sci-fi"));
-    }
 
     @DisplayName("Должен возвращать все книги")
     @Test
-    @Transactional
     public void shouldReturnAllTheBooks() throws Exception {
-        Book theDeath = bookDao.save(new Book(0, "The death", vasilyev, fantasy, null));
-        Book theDarkness = bookDao.save(new Book(0, "The darkness", vasilyev, fantasy, null));
-        List<BookDto> booksDtoList = List.of(theDeath, theDarkness).stream().map(bookConverter::toDto).
-                collect(Collectors.toList());
+        Author vasilyev = new Author(0, "Васильев", "Владимир");
+        Genre fantasy = new Genre(0, "fantasy");
+
+        when(bookService.getAll()).thenReturn(
+                List.of(
+                        new Book(0, "The death", vasilyev, fantasy, null),
+                        new Book(0, "The darkness", vasilyev, fantasy, null)
+                )
+        );
+
+        List<BookDto> booksDtoList = List.of(
+                new Book(0, "The death", vasilyev, fantasy, null),
+                new Book(0, "The darkness", vasilyev, fantasy, null)
+        ).stream().map(bookConverter::toDto).collect(Collectors.toList());
 
         ObjectMapper mapper = new ObjectMapper();
         String booksJson = mapper.writeValueAsString(booksDtoList);
@@ -86,69 +76,117 @@ public class BookControllerTest {
     }
 
     @DisplayName("Должен возвращать в JSON обновленную книгу")
-    @Transactional
     @Test
     public void updateShouldReturnUpdatedBook() throws Exception {
-        Book theDeath = bookDao.save(new Book(0, "The death", vasilyev, fantasy, null));
+        when(authorService.getAuthor(6)).thenReturn(Optional.of(new Author(6, "Лукьяненко", "Сергей")));
+        when(genreService.getGenre(11)).thenReturn(Optional.of(new Genre(11, "sci-fi")));
+        when(bookService.getBook(10)).thenReturn(Optional.of(
+                new BookBuilder().
+                        setBookId(10).
+                        setBookName("The death").
+                        setAuthorId(5).
+                        setAuthorName("Владимир").
+                        setAuthorSurname("Васильев").
+                        setGenreId(12).
+                        setGenreName("fantasy").build()));
 
-        BookDto bookDto = bookConverter.toDto(theDeath);
-        bookDto.setName("the darkness");
-        bookDto.setAuthor(authorConverter.toDto(lukyanenko));
-        bookDto.setGenre(genreConverter.toDto(skiFi));
+        Book currentBook = new BookBuilder().
+                setBookId(10).
+                setBookName("The death").
+                setAuthorId(5).
+                setAuthorName("Владимир").
+                setAuthorSurname("Васильев").
+                setGenreId(12).
+                setGenreName("fantasy").build();
+        Book changedBook = new BookBuilder().
+                setBookId(10).
+                setBookName("the darkness").
+                setAuthorId(6).
+                setAuthorName("Сергей").
+                setAuthorSurname("Лукьяненко").
+                setGenreId(11).
+                setGenreName("sci-fi").build();
+        BookDto bookDto = bookConverter.toDto(changedBook);
 
         ObjectMapper mapper = new ObjectMapper();
         String bookJson = mapper.writeValueAsString(bookDto);
 
         mvc.perform(
-                patch("/api/book/" + theDeath.getId()).
+                patch("/api/book/" + currentBook.getId()).
                         param("name", bookDto.getName()).
-                        param("genreid", Long.toString(bookDto.getGenre().getId())).
-                        param("authorid", Long.toString(bookDto.getAuthor().getId()))
+                        param("genreid", Long.toString(11)).
+                        param("authorid", Long.toString(6))
         ).
                 andExpect(status().is2xxSuccessful()).
                 andExpect(content().json(bookJson));
     }
 
     @DisplayName("Должен обновлять книги в БД")
-    @Transactional
     @Test
     public void updateShouldUpdateBookInDB() throws Exception {
-        Book theDeath = bookDao.save(new Book(0, "The death", vasilyev, fantasy, null));
-
-        BookDto bookDto = bookConverter.toDto(theDeath);
-        bookDto.setName("the darkness");
-        bookDto.setAuthor(authorConverter.toDto(lukyanenko));
-        bookDto.setGenre(genreConverter.toDto(skiFi));
+        when(bookService.getBook(101)).thenReturn(Optional.of(
+                new BookBuilder().
+                        setBookId(101).
+                        setBookName("The death").
+                        setAuthorId(2).
+                        setAuthorSurname("Васильев").
+                        setAuthorName("Владимир").
+                        setGenreId(53).
+                        setGenreName("fantasy").
+                        build()
+        ));
+        when(authorService.getAuthor(3)).thenReturn(Optional.of(new Author(3, "Лукьяненко", "Сергей")));
+        when(genreService.getGenre(54)).thenReturn(Optional.of(new Genre(54, "sci-fi")));
+        Book changedBook = new BookBuilder().
+                setBookId(101).
+                setBookName("the darkness").
+                setAuthorId(3).
+                setAuthorSurname("Лукьяненко").
+                setAuthorName("Сергей").
+                setGenreId(54).
+                setGenreName("sci-fi").
+                build();
 
         mvc.perform(
-                patch("/api/book/" + theDeath.getId()).
-                        param("name", bookDto.getName()).
-                        param("genreid", Long.toString(bookDto.getGenre().getId())).
-                        param("authorid", Long.toString(bookDto.getAuthor().getId()))
+                patch("/api/book/" + 101).
+                        param("name", "the darkness").
+                        param("genreid", Long.toString(54)).
+                        param("authorid", Long.toString(3))
         ).
                 andExpect(status().is2xxSuccessful());
 
-        Book actualBook = bookDao.getById(bookDto.getId());
-        Book expected = bookConverter.toBook(bookDto);
-
-        assertThat(actualBook).usingRecursiveComparison().isEqualTo(expected);
+        verify(bookService, times(1)).changeBook(changedBook);
     }
 
     @DisplayName("Должен возвращать в JSON созданную книгу")
     @Test
     public void shouldReturnJSONWithNewBook() throws Exception {
-        BookDto bookDto = new BookDto(0, "The death", authorConverter.toDto(vasilyev),
-                genreConverter.toDto(fantasy));
+        when(authorService.getAuthor(2)).thenReturn(Optional.of(new Author(2, "Васильев", "Владимир")));
+        when(genreService.getGenre(53)).thenReturn(Optional.of(new Genre(53, "fantasy")));
+
+        BookBuilder bookBuilder = new BookBuilder().
+                setBookName("The death").
+                setAuthorId(2).
+                setAuthorSurname("Васильев").
+                setAuthorName("Владимир").
+                setGenreId(53).
+                setGenreName("fantasy");
+
+        Book newBook = bookBuilder.build();
+        Book savedBook = bookBuilder.setBookId(1).build();
+
+        BookDto savedBookDto = bookConverter.toDto(savedBook);
 
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode jsonNode = mapper.valueToTree(bookDto);
-        jsonNode.remove("id"); // Удалим из JSON идентификатор новой книги, чтобы далее сравнивать только все остальные значения
+        ObjectNode jsonNode = mapper.valueToTree(savedBookDto);
+
+        when(bookService.addBook(newBook)).thenReturn(savedBook);
 
         mvc.perform(
                 post("/api/book").
-                        param("name", bookDto.getName()).
-                        param("genreid", Long.toString(bookDto.getGenre().getId())).
-                        param("authorid", Long.toString(bookDto.getAuthor().getId()))
+                        param("name", savedBookDto.getName()).
+                        param("genreid", Long.toString(53)).
+                        param("authorid", Long.toString(2))
         ).
                 andExpect(status().is2xxSuccessful()).
         andExpect(content().json(jsonNode.toString()));
@@ -156,35 +194,38 @@ public class BookControllerTest {
 
     @DisplayName("Вставлять созданную книгу в таблицу")
     @Test
-    @Transactional(readOnly = true)
     public void shouldInsertNewBookInDB() throws Exception {
-        MvcResult mvcResult = mvc.perform(
+        when(authorService.getAuthor(2)).thenReturn(Optional.of(new Author(2, "Васильев", "Владимир")));
+        when(genreService.getGenre(53)).thenReturn(Optional.of(new Genre(53, "fantasy")));
+
+
+        mvc.perform(
                 post("/api/book").
                         param("name", "The death").
-                        param("genreid", Long.toString(fantasy.getId())).
-                        param("authorid", Long.toString(vasilyev.getId()))
+                        param("genreid", Long.toString(53)).
+                        param("authorid", Long.toString(2))
         ).
                 andExpect(status().is2xxSuccessful()).andReturn();
 
-        String content = mvcResult.getResponse().getContentAsString(UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        BookDto expectedDto = mapper.readValue(content, BookDto.class);
+        Book createdBook = new BookBuilder().
+                setBookName("The death").
+                setAuthorId(2).
+                setAuthorSurname("Васильев").
+                setAuthorName("Владимир").
+                setGenreId(53).
+                setGenreName("fantasy").
+                build();
+        verify(bookService, times(1)).addBook(createdBook);
 
-        Book actual = bookDao.getById(expectedDto.getId());
-        BookDto actualDto = bookConverter.toDto(actual);
-        assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
     }
     
     @DisplayName("Удалять книгу из БД")
     @Test
-    @Transactional(readOnly = true)
     public void shouldDeleteBookFromDB() throws Exception {
-        Book theDeath = bookDao.save(new Book(0, "The death", vasilyev, fantasy, null));
-        long bookId = theDeath.getId();
         mvc.perform(
-                delete("/api/book/" + bookId)
+                delete("/api/book/" + 100500)
         ).andExpect(status().is2xxSuccessful());
 
-        assertThat(bookDao.findById(bookId)).isEmpty();
+        verify(bookService, times(1)).deleteBookById(100500);
     }
 }

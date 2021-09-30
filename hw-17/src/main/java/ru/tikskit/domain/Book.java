@@ -2,6 +2,7 @@ package ru.tikskit.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -30,10 +32,12 @@ public class Book {
     private long id;
 
     @Column(name = "name")
+    @EqualsAndHashCode.Include
     private  String name;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
+    @EqualsAndHashCode.Include
     private Author author;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
