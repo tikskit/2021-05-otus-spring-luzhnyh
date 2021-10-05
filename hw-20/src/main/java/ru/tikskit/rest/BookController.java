@@ -13,19 +13,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
-import ru.tikskit.domain.Genre;
 import ru.tikskit.repository.AuthorRepository;
 import ru.tikskit.repository.BookRepository;
 import ru.tikskit.repository.GenreRepository;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
-import static reactor.core.publisher.Mono.just;
 
 @AllArgsConstructor
 @RestController
