@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookBuilder {
-    private long bookId;
+    private String bookId;
     private String bookName;
 
     // author
-    private long authorId;
+    private String authorId;
     private String authorSurname;
     private String authorName;
 
     // genre
-    private long genreId;
+    private String genreId;
     private String genreName;
 
     // comments
     List<Comment> comments;
 
-    public BookBuilder setBookId(long bookId) {
+    public BookBuilder setBookId(String bookId) {
         this.bookId = bookId;
 
         return this;
@@ -31,7 +31,7 @@ public class BookBuilder {
         return this;
     }
 
-    public BookBuilder setAuthorId(long id) {
+    public BookBuilder setAuthorId(String id) {
         this.authorId = id;
 
         return this;
@@ -49,7 +49,7 @@ public class BookBuilder {
         return this;
     }
 
-    public BookBuilder setGenreId(long id) {
+    public BookBuilder setGenreId(String id) {
         this.genreId = id;
 
         return this;
@@ -61,7 +61,7 @@ public class BookBuilder {
         return this;
     }
 
-    public BookBuilder addComment(long id, String text) {
+    public BookBuilder addComment(String id, String text) {
         if (comments == null)
             comments = new ArrayList<>();
         comments.add(new Comment(id, text));

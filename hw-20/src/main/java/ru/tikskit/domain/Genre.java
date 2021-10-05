@@ -2,33 +2,20 @@ package ru.tikskit.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "genres", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
+@Document(collection = "genres")
 public class Genre {
+    private String id;
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(name = "name")
+    @Field(name = "name")
+    @EqualsAndHashCode.Include
     private String name;
-
-    @Override
-    public String toString() {
-        return "Genre{id=" + id + ", name='" + name + "'}";
-    }
 }
