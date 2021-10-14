@@ -93,6 +93,7 @@
         <module>hw-16</module>
         <module>hw-17</module>
         <module>hw-20</module>
+        <module>hw-23</module>
     </modules>
 
     <build>
