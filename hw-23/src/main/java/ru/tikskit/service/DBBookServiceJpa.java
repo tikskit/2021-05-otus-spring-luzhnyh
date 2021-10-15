@@ -3,7 +3,7 @@ package ru.tikskit.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.tikskit.dao.BookDao;
+import ru.tikskit.repository.BookRepository;
 import ru.tikskit.domain.Book;
 
 import java.util.List;
@@ -13,47 +13,47 @@ import java.util.Optional;
 public class DBBookServiceJpa implements DBBookService {
     private static final Logger logger = LoggerFactory.getLogger(DBBookServiceJpa.class);
 
-    private final BookDao bookDao;
+    private final BookRepository bookRepository;
 
-    public DBBookServiceJpa(BookDao bookDao) {
-        this.bookDao = bookDao;
+    public DBBookServiceJpa(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @Override
     public Optional<Book> getBook(long id) {
-        Optional<Book> bookOptional = Optional.of(bookDao.getById(id));
+        Optional<Book> bookOptional = Optional.of(bookRepository.getById(id));
         logger.info("Book got from db: {}", bookOptional.get());
         return bookOptional;
     }
 
     @Override
     public Book addBook(Book book) {
-        Book res = bookDao.save(book);
+        Book res = bookRepository.save(book);
         logger.info("Book added {}", res);
         return res;
     }
 
     @Override
     public Book changeBook(Book book) {
-        Book updated = bookDao.save(book);
+        Book updated = bookRepository.save(book);
         logger.info("Book updated {}", updated);
         return updated;
     }
 
     @Override
     public void deleteBook(Book book) {
-        bookDao.delete(book);
+        bookRepository.delete(book);
         logger.info("Book deleted {}", book);
     }
 
     @Override
     public void deleteBookById(long id) {
-        bookDao.deleteById(id);
+        bookRepository.deleteById(id);
         logger.info("Book deleted {}", id);
     }
 
     @Override
     public List<Book> getAll() {
-        return bookDao.findAll();
+        return bookRepository.findAll();
     }
 }

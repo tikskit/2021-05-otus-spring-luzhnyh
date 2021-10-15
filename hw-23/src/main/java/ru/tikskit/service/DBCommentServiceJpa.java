@@ -3,7 +3,7 @@ package ru.tikskit.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.tikskit.dao.CommentDao;
+import ru.tikskit.repository.CommentRepository;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
 
@@ -16,17 +16,17 @@ import java.util.Optional;
 public class DBCommentServiceJpa implements DBCommentService {
     private static final Logger logger = LoggerFactory.getLogger(DBCommentServiceJpa.class);
 
-    private final CommentDao commentDao;
+    private final CommentRepository commentRepository;
     private final DBBookService dbBookService;
 
-    public DBCommentServiceJpa(CommentDao commentDao, DBBookService dbBookService) {
-        this.commentDao = commentDao;
+    public DBCommentServiceJpa(CommentRepository commentRepository, DBBookService dbBookService) {
+        this.commentRepository = commentRepository;
         this.dbBookService = dbBookService;
     }
 
     @Override
     public Optional<Comment> getComment(long id) {
-        Optional<Comment> commentOptional = Optional.of(commentDao.getById(id));
+        Optional<Comment> commentOptional = Optional.of(commentRepository.getById(id));
         logger.info("Comment got from db: {}", commentOptional.get());
         return commentOptional;
     }
@@ -48,14 +48,14 @@ public class DBCommentServiceJpa implements DBCommentService {
 
     @Override
     public Comment changeComment(Comment comment) {
-        Comment updated = commentDao.save(comment);
+        Comment updated = commentRepository.save(comment);
         logger.info("Comment updated {}", updated);
         return updated;
     }
 
     @Override
     public void deleteComment(Comment comment) {
-        commentDao.delete(comment);
+        commentRepository.delete(comment);
         logger.info("Comment deleted {}", comment);
     }
 }

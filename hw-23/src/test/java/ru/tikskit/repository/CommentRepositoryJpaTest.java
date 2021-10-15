@@ -1,4 +1,4 @@
-package ru.tikskit.dao;
+package ru.tikskit.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +10,10 @@ import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
 import ru.tikskit.domain.Genre;
+import ru.tikskit.repository.AuthorRepository;
+import ru.tikskit.repository.BookRepository;
+import ru.tikskit.repository.CommentRepository;
+import ru.tikskit.repository.GenreRepository;
 
 import java.util.List;
 
@@ -17,17 +21,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий для комментариев должен")
 @DataJpaTest
-class CommentDaoJpaTest {
+class CommentRepositoryJpaTest {
     @Autowired
     private TestEntityManager em;
     @Autowired
-    private CommentDao commentDao;
+    private CommentRepository commentRepository;
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
     @Autowired
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
     @Autowired
-    private BookDao bookDao;
+    private BookRepository bookRepository;
 
     private Author lukyanenko;
     private Author vasilyev;
@@ -41,15 +45,15 @@ class CommentDaoJpaTest {
 
     @BeforeEach
     public void setUp() {
-        lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
-        vasilyev = authorDao.save(new Author(0, "Васильев", "Сергей"));
-        gaiman = authorDao.save(new Author(0, "Гейман", "Нил"));
+        lukyanenko = authorRepository.save(new Author(0, "Лукьяненко", "Сергей"));
+        vasilyev = authorRepository.save(new Author(0, "Васильев", "Сергей"));
+        gaiman = authorRepository.save(new Author(0, "Гейман", "Нил"));
 
-        sciFi = genreDao.save(new Genre(0, "sci-fi"));
-        fantasy = genreDao.save(new Genre(0, "fantasy"));
+        sciFi = genreRepository.save(new Genre(0, "sci-fi"));
+        fantasy = genreRepository.save(new Genre(0, "fantasy"));
 
-        blackRelay = bookDao.save(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
-        darkness = bookDao.save(new Book(0, "Тьма", lukyanenko, fantasy, null));
+        blackRelay = bookRepository.save(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
+        darkness = bookRepository.save(new Book(0, "Тьма", lukyanenko, fantasy, null));
 
         blackRelay.setComments(List.of(
                 new Comment(0, "Не читал, потому что не нравится"),
@@ -63,7 +67,7 @@ class CommentDaoJpaTest {
         em.flush();
         em.clear();
 
-        Book actualBook = bookDao.getById(blackRelay.getId());
+        Book actualBook = bookRepository.getById(blackRelay.getId());
         assertThat(actualBook).isNotNull().matches(s -> s.getComments().size() == blackRelay.getComments().size());
         assertThat(actualBook.getComments()).containsExactlyInAnyOrderElementsOf(blackRelay.getComments());
     }
@@ -74,7 +78,7 @@ class CommentDaoJpaTest {
         em.flush();
         em.clear();
 
-        Comment actual = commentDao.getById(blackRelay.getComments().get(0).getId());
+        Comment actual = commentRepository.getById(blackRelay.getComments().get(0).getId());
         assertThat(actual.getId()).isEqualTo(blackRelay.getComments().get(0).getId());
     }
 
@@ -85,9 +89,9 @@ class CommentDaoJpaTest {
         em.clear();
 
         long commentId = blackRelay.getComments().get(0).getId();
-        Comment current = commentDao.getById(commentId);
+        Comment current = commentRepository.getById(commentId);
         current.setText("Прочитал, очень понравилось");
-        commentDao.save(current);
+        commentRepository.save(current);
 
         em.flush();
         em.clear();
@@ -101,7 +105,7 @@ class CommentDaoJpaTest {
     public void shouldDeleteComment() {
         Comment deleting = blackRelay.getComments().get(0);
         long deletingId = deleting.getId();
-        commentDao.delete(deleting);
+        commentRepository.delete(deleting);
 
         em.flush();
         em.clear();

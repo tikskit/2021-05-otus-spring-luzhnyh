@@ -1,4 +1,4 @@
-package ru.tikskit.dao;
+package ru.tikskit.repository;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.tikskit.domain.Author;
+import ru.tikskit.repository.AuthorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Dao для работы с авторами должно")
 @DataJpaTest
-class AuthorDaoJpaTest {
+class AuthorRepositoryJpaTest {
 
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -26,7 +27,7 @@ class AuthorDaoJpaTest {
     @DisplayName("устанавливать идентификатор объекта при его сохранении в БД")
     @Test
     public void checkSavingAuthorSetsId() {
-        Author expected = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author expected = authorRepository.save(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expected.getId()).
                 as("check that id is assigned now").
@@ -37,7 +38,7 @@ class AuthorDaoJpaTest {
     @DisplayName("добавлять методом insert одного автора")
     @Test
     public void insertShouldCreateOneAuthor() {
-        Author expectedAuthor = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author expectedAuthor = authorRepository.save(new Author(0, "Васильев", "Владимир"));
 
         assertThat(expectedAuthor.getId()).
                 as("check that id is assigned now").
@@ -60,7 +61,7 @@ class AuthorDaoJpaTest {
             expectedTuples.add(new Tuple(author.getSurname(), author.getName()));
         }
 
-        List<Author> actualAuthors = authorDao.findAll();
+        List<Author> actualAuthors = authorRepository.findAll();
         assertThat(actualAuthors).
                 extracting("surname", "name").
                 as("check that only genres we've just added exist").

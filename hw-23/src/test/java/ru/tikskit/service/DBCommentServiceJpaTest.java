@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import ru.tikskit.dao.CommentDao;
+import ru.tikskit.repository.CommentRepository;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.BookBuilder;
 import ru.tikskit.domain.Comment;
@@ -27,7 +27,7 @@ class DBCommentServiceJpaTest {
     @MockBean
     DBBookService bookService;
     @MockBean
-    CommentDao commentDao;
+    CommentRepository commentRepository;
 
     @DisplayName("добавлять комментарий к книге")
     @Transactional
@@ -54,7 +54,7 @@ class DBCommentServiceJpaTest {
     public void shouldUpdateComment() {
         Comment persisComment = new Comment(10L, "Some text");
         dbCommentService.changeComment(persisComment);
-        verify(commentDao, times(1)).save(persisComment);
+        verify(commentRepository, times(1)).save(persisComment);
     }
 
     @DisplayName("удалять существующий комментарий")
@@ -63,6 +63,6 @@ class DBCommentServiceJpaTest {
     public void shouldDeleteComment() {
         Comment persisComment = new Comment(10L, "Some text");
         dbCommentService.deleteComment(persisComment);
-        verify(commentDao, times(1)).delete(persisComment);
+        verify(commentRepository, times(1)).delete(persisComment);
     }
 }

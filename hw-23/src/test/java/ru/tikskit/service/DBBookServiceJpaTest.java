@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import ru.tikskit.dao.BookDao;
+import ru.tikskit.repository.BookRepository;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.BookBuilder;
 
@@ -21,7 +21,7 @@ class DBBookServiceJpaTest {
     @Autowired
     DBBookService dbBookService;
     @MockBean
-    BookDao bookDao;
+    BookRepository bookRepository;
 
     @DisplayName("добавлять одну и только одну книгу")
     @Test
@@ -36,15 +36,15 @@ class DBBookServiceJpaTest {
         Book newBook = bookBuilder.build();
         Book persistBook = bookBuilder.setBookId(50).build();
 
-        when(bookDao.save(newBook)).thenReturn(persistBook);
+        when(bookRepository.save(newBook)).thenReturn(persistBook);
         dbBookService.addBook(newBook);
-        verify(bookDao, times(1)).save(newBook);
+        verify(bookRepository, times(1)).save(newBook);
     }
 
     @DisplayName("правильно возвращать книгу по идентификатору")
     @Test
     public void getBookShouldReturnProperEntity() {
-        when(bookDao.getById(1050L)).thenReturn(
+        when(bookRepository.getById(1050L)).thenReturn(
                 new BookBuilder().
                         setBookId(1050L).
                         setBookName("Черная эстафета").
@@ -57,14 +57,14 @@ class DBBookServiceJpaTest {
 
         );
         dbBookService.getBook(1050L);
-        verify(bookDao, times(1)).getById(1050L);
+        verify(bookRepository, times(1)).getById(1050L);
     }
 
     @DisplayName("правильно выбирать все книги из таблицы books")
     @Test
     public void getAllShouldReturnAllBooks() {
         dbBookService.getAll();
-        verify(bookDao, times(1)).findAll();
+        verify(bookRepository, times(1)).findAll();
     }
 
     @DisplayName("правильно удалять книги из БД")
@@ -80,14 +80,14 @@ class DBBookServiceJpaTest {
                 setGenreName("fantasy").
                 build();
         dbBookService.deleteBook(deletedBook);
-        verify(bookDao, times(1)).delete(deletedBook);
+        verify(bookRepository, times(1)).delete(deletedBook);
     }
 
     @DisplayName("правильно удалять книги из БД по идентификатору")
     @Test
     public void entityDisappearsWhenItDeletedById() {
         dbBookService.deleteBookById(1050L);
-        verify(bookDao, times(1)).deleteById(1050L);
+        verify(bookRepository, times(1)).deleteById(1050L);
     }
 
     @DisplayName("правильно изменять книги в БД")
@@ -104,7 +104,7 @@ class DBBookServiceJpaTest {
                 build();
 
         dbBookService.changeBook(changedBook);
-        verify(bookDao, times(1)).save(changedBook);
+        verify(bookRepository, times(1)).save(changedBook);
     }
 
 }

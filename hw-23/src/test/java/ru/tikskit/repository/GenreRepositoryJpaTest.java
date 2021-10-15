@@ -1,4 +1,4 @@
-package ru.tikskit.dao;
+package ru.tikskit.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.tikskit.domain.Genre;
+import ru.tikskit.repository.GenreRepository;
 
 import java.util.List;
 
@@ -13,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Dao для работы с жанрами должно")
 @DataJpaTest
-class GenreDaoJpaTest {
+class GenreRepositoryJpaTest {
 
     @Autowired
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -24,7 +25,7 @@ class GenreDaoJpaTest {
     @DisplayName("добавлять методом insert один жанр")
     @Test
     public void insertShouldCreateOneGenre() {
-        Genre expectedGenre = genreDao.save(new Genre(0, "sci-fi"));
+        Genre expectedGenre = genreRepository.save(new Genre(0, "sci-fi"));
 
         assertThat(expectedGenre.getId()).
                 as("check that id is assigned now").
@@ -44,7 +45,7 @@ class GenreDaoJpaTest {
             em.persist(new Genre(0, genre));
         }
 
-        List<Genre> actualGenres = genreDao.findAll();
+        List<Genre> actualGenres = genreRepository.findAll();
         assertThat(actualGenres).
                 extracting("name", String.class).
                 as("check that exist only genres we've just added").

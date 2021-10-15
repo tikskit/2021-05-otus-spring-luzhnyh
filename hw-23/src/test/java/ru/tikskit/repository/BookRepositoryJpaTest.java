@@ -1,4 +1,4 @@
-package ru.tikskit.dao;
+package ru.tikskit.repository;
 
 import org.assertj.core.groups.Tuple;
 import org.hibernate.SessionFactory;
@@ -11,6 +11,9 @@ import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
 import ru.tikskit.domain.Genre;
+import ru.tikskit.repository.AuthorRepository;
+import ru.tikskit.repository.BookRepository;
+import ru.tikskit.repository.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,29 +23,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
-class BookDaoJpaTest {
+class BookRepositoryJpaTest {
 
     @Autowired
     private TestEntityManager em;
     @Autowired
-    private BookDao bookDao;
+    private BookRepository bookRepository;
     @Autowired
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
 
     @DisplayName("добавлять методом insert одну книгу")
     @Test
     public void insertShouldCreateOneBook() {
-        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
-        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Book expectedBook = bookDao.save(new Book(0, "Черная эстафета", author, genre, null));
+        Genre genre = genreRepository.save(new Genre(0, "sci-fi"));
+        Author author = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Book expectedBook = bookRepository.save(new Book(0, "Черная эстафета", author, genre, null));
 
         assertThat(expectedBook.getId()).
                 as("check that id is assigned now").
                 isGreaterThan(0);
 
-        Book actualBook = bookDao.getById(expectedBook.getId());
+        Book actualBook = bookRepository.getById(expectedBook.getId());
         assertThat(expectedBook).usingRecursiveComparison()
                 .isEqualTo(actualBook);
     }
@@ -50,11 +53,11 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreIsViolated() {
-        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author author = authorRepository.save(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", author, null, null);
 
-        assertThatThrownBy(() -> bookDao.save(book)).
+        assertThatThrownBy(() -> bookRepository.save(book)).
                 as("check fk_book_genre").
                 isInstanceOf(Exception.class);
     }
@@ -62,11 +65,11 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке добавить книгу с нарушением внешнего ключа fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorIsViolated() {
-        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
+        Genre genre = genreRepository.save(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", null, genre, null);
 
-        assertThatThrownBy(() -> bookDao.save(book)).
+        assertThatThrownBy(() -> bookRepository.save(book)).
                 as("check fk_book_author").
                 isInstanceOf(Exception.class);
     }
@@ -74,13 +77,13 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение при попытке вставить одну и ту же книгу два раза")
     @Test
     public void throwsExceptionWhenUniqueAuthorConstraintIsViolated() {
-        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
-        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Genre genre = genreRepository.save(new Genre(0, "sci-fi"));
+        Author author = authorRepository.save(new Author(0, "Васильев", "Владимир"));
 
-        bookDao.save(new Book(0, "Черная эстафета", author, genre, null));
+        bookRepository.save(new Book(0, "Черная эстафета", author, genre, null));
         Book again = new Book(0, "Черная эстафета", author, genre, null);
 
-        assertThatThrownBy(() -> bookDao.save(again)).
+        assertThatThrownBy(() -> bookRepository.save(again)).
                 as("check unique books constraints").
                 isInstanceOf(Exception.class);
 
@@ -89,11 +92,11 @@ class BookDaoJpaTest {
     @DisplayName("вернуть все книги из таблицы books")
     @Test
     public void shouldReturnAllBooks() {
-        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
+        Genre sciFi = genreRepository.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreRepository.save(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorRepository.save(new Author(0, "Лукьяненко", "Сергей"));
 
         List<Book> expectedBooks = List.of(
                 new Book(0, "Черная эстафета", vasilyev, sciFi, null),
@@ -108,7 +111,7 @@ class BookDaoJpaTest {
             expectedTuples.add(new Tuple(book.getAuthor().getSurname(), book.getName()));
         }
 
-        List<Book> actualBooks = bookDao.findAll();
+        List<Book> actualBooks = bookRepository.findAll();
         assertThat(actualBooks).
                 extracting("author.surname", "name").
                 as("check that only books we've just added exist").
@@ -118,7 +121,7 @@ class BookDaoJpaTest {
     private List<Book> insertAllBooks(List<Book> list) {
         List<Book> res = new ArrayList<>();
         for (Book book : list) {
-            res.add(bookDao.save(book));
+            res.add(bookRepository.save(book));
         }
         return res;
     }
@@ -126,18 +129,18 @@ class BookDaoJpaTest {
     @DisplayName("фиксировать все изменения книги в БД")
     @Test
     public void updateShouldChangeAllFields() {
-        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
+        Genre sciFi = genreRepository.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreRepository.save(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorRepository.save(new Author(0, "Лукьяненко", "Сергей"));
 
-        Book initBook = bookDao.save(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
+        Book initBook = bookRepository.save(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
 
         Book updatedBook = new Book(initBook.getId(), "Предел", lukyanenko, fantasy, null);
-        bookDao.save(updatedBook);
+        bookRepository.save(updatedBook);
 
-        Book actualBook = bookDao.getById(initBook.getId());
+        Book actualBook = bookRepository.getById(initBook.getId());
         assertThat(actualBook).
                 as("check book was updated in DB").
                 usingRecursiveComparison().
@@ -147,18 +150,18 @@ class BookDaoJpaTest {
     @DisplayName("удалять книги из таблицы books")
     @Test
     public void deletedBookShouldDisappearInDB() {
-        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
+        Genre sciFi = genreRepository.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreRepository.save(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorRepository.save(new Author(0, "Лукьяненко", "Сергей"));
 
-        bookDao.save(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
-        Book deletedBook = bookDao.save(new Book(0, "Предел", lukyanenko, fantasy, null));
+        bookRepository.save(new Book(0, "Черная эстафета", lukyanenko, sciFi, null));
+        Book deletedBook = bookRepository.save(new Book(0, "Предел", lukyanenko, fantasy, null));
 
-        bookDao.delete(deletedBook);
+        bookRepository.delete(deletedBook);
 
-        List<Book> actualBooks = bookDao.findAll();
+        List<Book> actualBooks = bookRepository.findAll();
 
         assertThat(actualBooks).
                 as("check deleted book disappeared").
@@ -169,10 +172,10 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_genre")
     @Test
     public void throwsExceptionWhenFKBookGenreViolated() {
-        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Author vasilyev = authorRepository.save(new Author(0, "Васильев", "Владимир"));
 
         Book book = new Book(0, "Черная эстафета", vasilyev, null, null);
-        assertThatThrownBy(() -> bookDao.save(book)).
+        assertThatThrownBy(() -> bookRepository.save(book)).
                 as("check exception is throw when fk_book_genre is violated").
                 isInstanceOf(Exception.class);
 
@@ -181,10 +184,10 @@ class BookDaoJpaTest {
     @DisplayName("выбрасывать исключение, если нарушен ключ fk_book_author")
     @Test
     public void throwsExceptionWhenFKBookAuthorViolated() {
-        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
+        Genre sciFi = genreRepository.save(new Genre(0, "sci-fi"));
 
         Book book = new Book(0, "Черная эстафета", null, sciFi, null);
-        assertThatThrownBy(() -> bookDao.save(book)).
+        assertThatThrownBy(() -> bookRepository.save(book)).
                 as("check exception is throw when fk_book_author is violated").
                 isInstanceOf(Exception.class);
 
@@ -193,19 +196,19 @@ class BookDaoJpaTest {
     @DisplayName("правильно выбирать книги с авторами и жанрами")
     @Test
     public void getAllShouldReturnBooksWithAuthorsAndGenres() {
-        Genre sciFi = genreDao.save(new Genre(0, "sci-fi"));
-        Genre fantasy = genreDao.save(new Genre(0, "fantasy"));
+        Genre sciFi = genreRepository.save(new Genre(0, "sci-fi"));
+        Genre fantasy = genreRepository.save(new Genre(0, "fantasy"));
 
-        Author vasilyev = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Author lukyanenko = authorDao.save(new Author(0, "Лукьяненко", "Сергей"));
+        Author vasilyev = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Author lukyanenko = authorRepository.save(new Author(0, "Лукьяненко", "Сергей"));
 
-        Book blackRelay = bookDao.save(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
-        Book darkness = bookDao.save(new Book(0, "Тьма", lukyanenko, fantasy, null));
+        Book blackRelay = bookRepository.save(new Book(0, "Черная эстафета", vasilyev, sciFi, null));
+        Book darkness = bookRepository.save(new Book(0, "Тьма", lukyanenko, fantasy, null));
 
         List<Book> expected = List.of(new Book(darkness.getId(), darkness.getName(), lukyanenko, fantasy, null),
                 new Book(blackRelay.getId(), blackRelay.getName(), vasilyev, sciFi, null));
 
-        List<Book> actual = bookDao.findAll();
+        List<Book> actual = bookRepository.findAll();
 
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
@@ -213,9 +216,9 @@ class BookDaoJpaTest {
     @DisplayName("загружать комментарии к книге за один запрос")
     @Test
     public void getBookComments() {
-        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
-        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
-        Book book = bookDao.save(new Book(0, "Черная эстафета", author, genre, null));
+        Genre genre = genreRepository.save(new Genre(0, "sci-fi"));
+        Author author = authorRepository.save(new Author(0, "Васильев", "Владимир"));
+        Book book = bookRepository.save(new Book(0, "Черная эстафета", author, genre, null));
 
         List<Comment> expected = List.of(
                 new Comment(0, "Лукьяненко чмо"),
