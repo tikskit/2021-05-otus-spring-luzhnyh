@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
@@ -27,11 +29,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 @DisplayName("REST контроллер книг")
 public class BookControllerTest {
     @MockBean
@@ -47,6 +51,10 @@ public class BookControllerTest {
     @Autowired
     private BookConverter bookConverter;
 
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Должен возвращать все книги")
     @Test
     public void shouldReturnAllTheBooks() throws Exception {
@@ -73,6 +81,18 @@ public class BookControllerTest {
                 andExpect(content().json(booksJson));
     }
 
+    @DisplayName("перенаправлять неавторизованного пользователя с GET /api/book на страницу авторизации")
+    @Test
+    public void shouldntPassOnApiBookWhenNotAuthorized() throws Exception {
+        mvc.perform(get("/api/book"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Должен возвращать в JSON обновленную книгу")
     @Test
     public void updateShouldReturnUpdatedBook() throws Exception {
@@ -119,6 +139,36 @@ public class BookControllerTest {
                 andExpect(content().json(bookJson));
     }
 
+    @DisplayName("перенаправлять неавторизованного пользователя с PATCH /api/book на страницу авторизации")
+    @Test
+    public void shouldntPassOnPatchApiBookWhenNotAuthorized() throws Exception {
+        when(authorService.getAuthor(6)).thenReturn(Optional.of(new Author(6, "Лукьяненко", "Сергей")));
+        when(genreService.getGenre(11)).thenReturn(Optional.of(new Genre(11, "sci-fi")));
+        when(bookService.getBook(10)).thenReturn(Optional.of(
+                new BookBuilder().
+                        setBookId(10).
+                        setBookName("The death").
+                        setAuthorId(5).
+                        setAuthorName("Владимир").
+                        setAuthorSurname("Васильев").
+                        setGenreId(12).
+                        setGenreName("fantasy").build()));
+
+        mvc.perform(
+                patch("/api/book/" + 10).
+                        param("name", "the darkness").
+                        param("genreid", Long.toString(11)).
+                        param("authorid", Long.toString(6))
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Должен обновлять книги в БД")
     @Test
     public void updateShouldUpdateBookInDB() throws Exception {
@@ -156,6 +206,10 @@ public class BookControllerTest {
         verify(bookService, times(1)).changeBook(changedBook);
     }
 
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Должен возвращать в JSON созданную книгу")
     @Test
     public void shouldReturnJSONWithNewBook() throws Exception {
@@ -190,6 +244,23 @@ public class BookControllerTest {
         andExpect(content().json(jsonNode.toString()));
     }
 
+    @DisplayName("перенаправлять неавторизованного пользователя с POST /api/book на страницу авторизации")
+    @Test
+    public void shouldntPassOnPOSTApiBookWhenNotAuthorized() throws Exception {
+        mvc.perform(
+                post("/api/book").
+                        param("name", "The death").
+                        param("genreid", Long.toString(53)).
+                        param("authorid", Long.toString(2))
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Вставлять созданную книгу в таблицу")
     @Test
     public void shouldInsertNewBookInDB() throws Exception {
@@ -216,7 +287,11 @@ public class BookControllerTest {
         verify(bookService, times(1)).addBook(createdBook);
 
     }
-    
+
+    @WithMockUser(
+            username = "admin",
+            authorities = {"ADMIN"}
+    )
     @DisplayName("Удалять книгу из БД")
     @Test
     public void shouldDeleteBookFromDB() throws Exception {
@@ -225,5 +300,16 @@ public class BookControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         verify(bookService, times(1)).deleteBookById(100500);
+    }
+
+
+    @DisplayName("перенаправлять неавторизованного пользователя с DELETE /api/book на страницу авторизации")
+    @Test
+    public void shouldntPassOnDELETEApiBookWhenNotAuthorized() throws Exception {
+        mvc.perform(
+                delete("/api/book/" + 100500)
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "http://localhost/login"));
     }
 }
