@@ -94,6 +94,7 @@
         <module>hw-17</module>
         <module>hw-20</module>
         <module>hw-23</module>
+        <module>hw-25</module>
     </modules>
 
     <build>
