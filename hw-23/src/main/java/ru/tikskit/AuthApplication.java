@@ -12,19 +12,8 @@ import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 public class AuthApplication {
-/*
-	@Autowired
-	PasswordEncoder passwordEncoder;
-*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(AuthApplication.class, args);
 	}
-
-
-/*	@PostConstruct
-	private void postConstruct() {
-		String encPass = passwordEncoder.encode("password");
-		System.out.println(encPass);
-	}*/
 }
