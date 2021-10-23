@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-@DisplayName("REST контроллер книг")
+@DisplayName("REST контроллер книг должен")
 public class BookControllerTest {
     @MockBean
     private DBBookService bookService;
@@ -51,11 +51,7 @@ public class BookControllerTest {
     @Autowired
     private BookConverter bookConverter;
 
-    @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
-    )
-    @DisplayName("Должен возвращать все книги")
+    @DisplayName("возвращать все книги даже для неавторизованного посетителя")
     @Test
     public void shouldReturnAllTheBooks() throws Exception {
         Author vasilyev = new Author(0, "Васильев", "Владимир");
@@ -81,21 +77,13 @@ public class BookControllerTest {
                 andExpect(content().json(booksJson));
     }
 
-    @DisplayName("перенаправлять неавторизованного пользователя с GET /api/book на страницу авторизации")
-    @Test
-    public void shouldntPassOnApiBookWhenNotAuthorized() throws Exception {
-        mvc.perform(get("/api/book"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "http://localhost/login"));
-    }
-
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER"}
     )
-    @DisplayName("Должен возвращать в JSON обновленную книгу")
+    @DisplayName("возвращать в JSON обновленную книгу")
     @Test
-    public void updateShouldReturnUpdatedBook() throws Exception {
+    public void updateShouldReturnUpdatedBookWhenSupporter() throws Exception {
         when(authorService.getAuthor(6)).thenReturn(Optional.of(new Author(6, "Лукьяненко", "Сергей")));
         when(genreService.getGenre(11)).thenReturn(Optional.of(new Genre(11, "sci-fi")));
         when(bookService.getBook(10)).thenReturn(Optional.of(
@@ -141,18 +129,7 @@ public class BookControllerTest {
 
     @DisplayName("перенаправлять неавторизованного пользователя с PATCH /api/book на страницу авторизации")
     @Test
-    public void shouldntPassOnPatchApiBookWhenNotAuthorized() throws Exception {
-        when(authorService.getAuthor(6)).thenReturn(Optional.of(new Author(6, "Лукьяненко", "Сергей")));
-        when(genreService.getGenre(11)).thenReturn(Optional.of(new Genre(11, "sci-fi")));
-        when(bookService.getBook(10)).thenReturn(Optional.of(
-                new BookBuilder().
-                        setBookId(10).
-                        setBookName("The death").
-                        setAuthorId(5).
-                        setAuthorName("Владимир").
-                        setAuthorSurname("Васильев").
-                        setGenreId(12).
-                        setGenreName("fantasy").build()));
+    public void shouldRedirectAtPatchApiBookWhenAnonymous() throws Exception {
 
         mvc.perform(
                 patch("/api/book/" + 10).
@@ -164,12 +141,28 @@ public class BookControllerTest {
                 .andExpect(header().string("Location", "http://localhost/login"));
     }
 
+    @WithMockUser(
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER", "ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("запрещать доступ пользователю с любыми правами, кроме BOOK_SUPPORTER с PATCH /api/book на страницу авторизации")
+    @Test
+    public void shouldForbidAtPatchApiBookWhenNotSupporter() throws Exception {
+
+        mvc.perform(
+                patch("/api/book/" + 10).
+                        param("name", "the darkness").
+                        param("genreid", Long.toString(11)).
+                        param("authorid", Long.toString(6))
+        )
+                .andExpect(status().isForbidden());
+    }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER"}
     )
-    @DisplayName("Должен обновлять книги в БД")
+    @DisplayName("обновлять книги в БД")
     @Test
     public void updateShouldUpdateBookInDB() throws Exception {
         when(bookService.getBook(101)).thenReturn(Optional.of(
@@ -207,10 +200,10 @@ public class BookControllerTest {
     }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER"}
     )
-    @DisplayName("Должен возвращать в JSON созданную книгу")
+    @DisplayName("возвращать в JSON созданную книгу,  если пользователь ROLE_BOOK_MANAGER")
     @Test
     public void shouldReturnJSONWithNewBook() throws Exception {
         when(authorService.getAuthor(2)).thenReturn(Optional.of(new Author(2, "Васильев", "Владимир")));
@@ -244,9 +237,25 @@ public class BookControllerTest {
         andExpect(content().json(jsonNode.toString()));
     }
 
+    @WithMockUser(
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER", "ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("запрещать доступ для пользователя с любыми правами, кроме ROLE_BOOK_MANAGER с POST /api/book")
+    @Test
+    public void shouldForbidAtPostApiBookWhenNotManager() throws Exception {
+        mvc.perform(
+                post("/api/book").
+                        param("name", "The death").
+                        param("genreid", Long.toString(53)).
+                        param("authorid", Long.toString(2))
+        )
+                .andExpect(status().isForbidden());
+    }
+
     @DisplayName("перенаправлять неавторизованного пользователя с POST /api/book на страницу авторизации")
     @Test
-    public void shouldntPassOnPOSTApiBookWhenNotAuthorized() throws Exception {
+    public void shouldRedirectAtPostApiBookWhenNotAuthorized() throws Exception {
         mvc.perform(
                 post("/api/book").
                         param("name", "The death").
@@ -258,10 +267,10 @@ public class BookControllerTest {
     }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER"}
     )
-    @DisplayName("Вставлять созданную книгу в таблицу")
+    @DisplayName("вставлять созданную книгу в таблицу")
     @Test
     public void shouldInsertNewBookInDB() throws Exception {
         when(authorService.getAuthor(2)).thenReturn(Optional.of(new Author(2, "Васильев", "Владимир")));
@@ -289,10 +298,10 @@ public class BookControllerTest {
     }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER"}
     )
-    @DisplayName("Удалять книгу из БД")
+    @DisplayName("удалять книгу из БД")
     @Test
     public void shouldDeleteBookFromDB() throws Exception {
         mvc.perform(
@@ -302,14 +311,81 @@ public class BookControllerTest {
         verify(bookService, times(1)).deleteBookById(100500);
     }
 
-
     @DisplayName("перенаправлять неавторизованного пользователя с DELETE /api/book на страницу авторизации")
     @Test
-    public void shouldntPassOnDELETEApiBookWhenNotAuthorized() throws Exception {
+    public void shouldRedirectAtDeleteApiBookWhenNotAuthorized() throws Exception {
         mvc.perform(
                 delete("/api/book/" + 100500)
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+    @WithMockUser(
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER", "ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("перенаправлять неавторизованного пользователя с DELETE /api/book на страницу авторизации")
+    @Test
+    public void shouldForbidAtDeleteApiBookWhenNotManager() throws Exception {
+        mvc.perform(
+                delete("/api/book/" + 100500)
+        )
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(
+            username = "Reviewer",
+            authorities = {"ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("добавлять комментарий к книге")
+    @Test
+    public void shouldCommentBook() throws Exception {
+        when(bookService.getBook(10)).thenReturn(
+                Optional.of(
+                        new BookBuilder()
+                                .setBookId(10)
+                                .setBookName("The death")
+                                .setAuthorId(2)
+                                .setAuthorSurname("Васильев")
+                                .setAuthorName("Владимир")
+                                .setGenreId(53)
+                                .setGenreName("fantasy")
+                                .addComment(1, "comment 1")
+                                .addComment(2, "comment 2")
+                                .build()
+                )
+        );
+
+        mvc.perform(
+                post(String.format("/api/book/%s/comment", 10))
+                .param("text", "any comment")
+        )
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @DisplayName("добавлять перенаправлять неавторизованного посетителя на страницу аутентификации")
+    @Test
+    public void shouldRedirectAtLoginPageCommentBookWhenNotAuth() throws Exception {
+        mvc.perform(
+                post(String.format("/api/book/%s/comment", 10))
+                .param("text", "any comment")
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+    @WithMockUser(
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER", "ROLE_BOOK_SUPPORTER"}
+    )
+    @DisplayName("добавлять перенаправлять неавторизованного посетителя на страницу аутентификации")
+    @Test
+    public void shouldForbidCommentBookWhenNotAuth() throws Exception {
+        mvc.perform(
+                post(String.format("/api/book/%s/comment", 10))
+                .param("text", "any comment")
+        )
+                .andExpect(status().isForbidden());
     }
 }

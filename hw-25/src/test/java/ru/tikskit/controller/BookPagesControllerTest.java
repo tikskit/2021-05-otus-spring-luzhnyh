@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -23,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@WebMvcTest
 @AutoConfigureTestDatabase
 @DisplayName("Контроллер страниц должен")
 class BookPagesControllerTest {
@@ -33,30 +31,29 @@ class BookPagesControllerTest {
     @MockBean
     private DBBookService bookService;
 
-    @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
-    )
-    @DisplayName("пускать на индексную страницу авторизованного посетителя")
+    @DisplayName("пускать на индексную страницу неавторизованных")
     @Test
-    public void shouldPassOnIndexPageWhenAuthorized() throws Exception {
+    public void shouldPassOnIndexPageWhenAnonymous() throws Exception {
         mvc.perform(get("/"))
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("перенаправлять неавторизованного пользователя на страницу авторизации")
+    @WithMockUser(
+            username = "God",
+            authorities = {"BOOK_MANAGER", "BOOK_SUPPORTER", "BOOK_REVIEWER"}
+    )
+    @DisplayName("пускать на индексную страницу имеющего любую роль")
     @Test
-    public void shouldntPassOnIndexPageWhenNotAuthorized() throws Exception {
+    public void shouldPassOnIndexPageWithAnyRole() throws Exception {
         mvc.perform(get("/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "http://localhost/login"));
+                .andExpect(status().isOk());
     }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER"}
     )
-    @DisplayName("пускать на страницу добавления книги авторизованного посетителя")
+    @DisplayName("пускать на страницу добавления книги ROLE_BOOK_MANAGER")
     @Test
     public void shouldPassOnaddbookPageWhenAuthorized() throws Exception {
         mvc.perform(get("/addbook"))
@@ -65,15 +62,26 @@ class BookPagesControllerTest {
 
     @DisplayName("перенаправлять неавторизованного пользователя на страницу авторизации")
     @Test
-    public void shouldntPassOnaddbookPageWhenNotAuthorized() throws Exception {
+    public void shouldntRedirectaddbookPageWhenNotAuthorized() throws Exception {
         mvc.perform(get("/addbook"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "http://localhost/login"));
     }
 
     @WithMockUser(
-            username = "admin",
-            authorities = {"ADMIN"}
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER", "ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("запрещать доступ на страницу /addbook всем, кто не ROLE_BOOK_MANAGER")
+    @Test
+    public void shouldForbidOnaddbookPageWhenNotManager() throws Exception {
+        mvc.perform(get("/addbook"))
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(
+            username = "Supporter",
+            authorities = {"ROLE_BOOK_SUPPORTER"}
     )
     @DisplayName("пускать на страницу редактирования книги авторизованного посетителя")
     @Test
@@ -95,9 +103,20 @@ class BookPagesControllerTest {
 
     @DisplayName("перенаправлять неавторизованного пользователя на страницу авторизации")
     @Test
-    public void shouldntPassOneditbookPageWhenNotAuthorized() throws Exception {
+    public void shouldRedirecteditbookPageWhenAnonymous() throws Exception {
         mvc.perform(get("/editbook").param("id", Long.toString(10L)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "http://localhost/login"));
+    }
+
+    @WithMockUser(
+            username = "Manager",
+            authorities = {"ROLE_BOOK_MANAGER", "ROLE_BOOK_REVIEWER"}
+    )
+    @DisplayName("запрещать доступ пользователю, если он не ROLE_BOOK_SUPPORTER")
+    @Test
+    public void shouldForbideditbookPageWhenNotSupporter() throws Exception {
+        mvc.perform(get("/editbook").param("id", Long.toString(10L)))
+                .andExpect(status().isForbidden());
     }
 }

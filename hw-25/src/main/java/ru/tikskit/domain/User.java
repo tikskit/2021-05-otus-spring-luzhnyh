@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,7 @@ import javax.persistence.UniqueConstraint;
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@ToString(of = {"login", "role"})
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"login"}))
 public class User {
     @EqualsAndHashCode.Include
@@ -26,4 +28,7 @@ public class User {
     @Setter
     @Column(name = "pass")
     private String pass;
+    @Setter
+    @Column(name = "role")
+    private String role;
 }

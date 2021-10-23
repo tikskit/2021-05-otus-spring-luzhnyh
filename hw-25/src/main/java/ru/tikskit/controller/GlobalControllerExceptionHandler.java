@@ -1,11 +1,16 @@
 package ru.tikskit.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.Optional;
 
 @ControllerAdvice
-public class GlobalControllerExceptionHandler {
+public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthorNotFoundException.class)
     public ModelAndView handleAuthorNotFoundException(AuthorNotFoundException e) {
@@ -38,4 +43,11 @@ public class GlobalControllerExceptionHandler {
         modelAndView.addObject("text", String.format("Произошла ошибка: %s", e.getMessage()));
         return modelAndView;
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> accessDenied() {
+        return ResponseEntity.of(Optional.of("Нет прав для доступа к ресурсу"));
+    }
+
+
 }

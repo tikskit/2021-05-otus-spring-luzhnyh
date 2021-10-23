@@ -1,0 +1,51 @@
+//            ВХОД-ВЫХОД
+###
+// Войти под BOOK_MANAGER
+POST http://localhost:8080/login?user=Manager&pass=Manager
+###
+// Войти под BOOK_SUPPORTER
+POST http://localhost:8080/login?user=Supporter&pass=Supporter
+###
+// Войти под BOOK_REVIEWER
+POST http://localhost:8080/login?user=Reviewer&pass=Reviewer
+###
+// Выйти
+GET http://localhost:8080/logout
+
+
+//            СОЗДАНИЕ КНИГ
+###
+POST http://localhost:8080/api/book?name=Darkness&genreid=1&authorid=1
+###
+POST http://localhost:8080/api/book?name=Darkness1&genreid=2&authorid=2
+###
+POST http://localhost:8080/api/book?name=Darkness2&genreid=2&authorid=1
+
+
+//            ОБХОД СТРАНИЦ
+###
+// Главная, со списком всех книг
+GET http://localhost:8080/
+
+###
+// Страница добавления новой книги
+GET http://localhost:8080/addbook
+
+###
+// Страница изменения существующей книги
+GET http://localhost:8080/editbook?id=1
+
+
+//            REST
+
+###
+// Получить список всех книг ------- V
+GET http://localhost:8080/api/book
+
+###
+// Удалить книгу
+DELETE http://localhost:8080/api/book/1
+
+###
+// Изменить книгу ---------- V
+PATCH http://localhost:8080/api/book/1?name=newName&genreid=1&authorid=1

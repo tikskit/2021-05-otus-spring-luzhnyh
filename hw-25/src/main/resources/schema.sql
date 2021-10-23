@@ -28,5 +28,6 @@ CREATE TABLE comments(
 
 CREATE TABLE users(
     login VARCHAR(255) PRIMARY KEY,
-    pass VARCHAR(255) NOT NULL
+    pass VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL
 );
