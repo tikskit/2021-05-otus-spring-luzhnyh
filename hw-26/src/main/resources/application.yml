@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    initialization-mode: always
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+  h2:
+    console:
+      enabled: true
+  shell:
+    interactive:
+      enabled: true
+
+app:
+  datasource:
+    src:
+      url: jdbc:h2:mem:librarydb
+      driverClassName: org.h2.Driver
+      platform: h2
+      schema: classpath:schema-srcH2.sql
+      data: classpath:data-srcH2.sql
+
+    tar:
+      database: librarymongo
+      port: 0
+      platform: mongo
