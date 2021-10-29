@@ -10,12 +10,6 @@ import ru.tikskit.service.TransferServiceImpl;
 import java.io.IOException;
 
 @EnableMongoRepositories
-/*
-@SpringBootApplication(exclude = {
-		MongoAutoConfiguration.class,
-		MongoDataAutoConfiguration.class
-})
-*/
 @SpringBootApplication
 public class Hw26Application {
 

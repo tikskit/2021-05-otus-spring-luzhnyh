@@ -5,13 +5,6 @@ spring:
     generate-ddl: false
     hibernate:
       ddl-auto: none
-  h2:
-    console:
-      enabled: true
-  shell:
-    interactive:
-      enabled: true
-
 app:
   datasource:
     src:
