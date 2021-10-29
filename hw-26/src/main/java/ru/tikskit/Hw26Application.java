@@ -23,10 +23,10 @@ public class Hw26Application {
 
 		ConfigurableApplicationContext context = SpringApplication.run(Hw26Application.class, args);
 
-/*
+
 		TransferService transferService = context.getBean(TransferServiceImpl.class);
 		transferService.start();
-*/
+
 	}
 
 

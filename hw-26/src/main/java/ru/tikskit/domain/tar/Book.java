@@ -8,21 +8,26 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "authors")
-public class Author {
+@Document(collection = "books")
+public class Book {
     @Id
     private String id;
 
-    @Field(name = "oldid")
-    private Long oldId;
-
-    @Field(name = "surname")
-    private String surname;
-
     @Field(name = "name")
     private String name;
+
+    @Field(name = "author")
+    private Author author;
+
+    @Field(name = "genre")
+    private Genre genre;
+
+    @Field(name = "comments")
+    private List<Comment> comments;
 }

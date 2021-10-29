@@ -1,4 +1,4 @@
-package ru.tikskit.config.db.source;
+package ru.tikskit.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -8,37 +8,33 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
 @Configuration
-//@EnableTransactionManagement
-public class SourceAuthorDataSourceConfig {
+public class SourceDataSourceConfig {
 
     @Bean
     @Primary
     @ConfigurationProperties("app.datasource.src")
-    public DataSourceProperties sourceAuthorDataSourceProperties() {
+    public DataSourceProperties sourceDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean
     @Primary
-    @ConfigurationProperties("app.datasource.src.configuration")
-    public DataSource sourceAuthorDataSource() {
-        return sourceAuthorDataSourceProperties().initializeDataSourceBuilder()
+    public DataSource sourceDataSource(DataSourceProperties sourceDataSourceProperties) {
+        return sourceDataSourceProperties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
     }
 
-
     @Bean
-    public LocalContainerEntityManagerFactoryBean sourceAuthorEntityManagerFactory(
-            EntityManagerFactoryBuilder builder) {
+    public LocalContainerEntityManagerFactoryBean sourceEntityManagerFactory(
+            EntityManagerFactoryBuilder builder, DataSource sourceDataSource) {
         return builder
-                .dataSource(sourceAuthorDataSource())
-                .packages(ru.tikskit.domain.src.Author.class)
+                .dataSource(sourceDataSource)
+                .packages(ru.tikskit.domain.src.Author.class, ru.tikskit.domain.src.Genre.class)
                 .build();
     }
 }

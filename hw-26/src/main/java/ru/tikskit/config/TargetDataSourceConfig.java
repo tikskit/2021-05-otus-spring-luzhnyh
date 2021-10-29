@@ -1,4 +1,4 @@
-package ru.tikskit.config.db.target;
+package ru.tikskit.config;
 
 import com.mongodb.client.MongoClients;
 import de.flapdoodle.embed.mongo.config.MongodConfig;
@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import java.io.IOException;
 
 @Configuration
-public class TargetAuthorDataSourceConfig {
+public class TargetDataSourceConfig {
 
     @Bean
     @ConfigurationProperties("app.datasource.tar")
@@ -32,14 +32,15 @@ public class TargetAuthorDataSourceConfig {
     }
 
     @Bean
-    public MongoTemplate targetMongoTemplate(MongoDatabaseFactory mongoDatabaseFactory) throws IOException {
+    public MongoTemplate targetMongoTemplate(MongoDatabaseFactory mongoDatabaseFactory) {
         return new MongoTemplate(mongoDatabaseFactory);
     }
 
     @Bean
-    public MongodConfig mongodConfig() throws IOException {
+    public MongodConfig mongodConfig(MongoProperties targetMongoProperties) throws IOException {
        // Настраиваем embedded mongo server так, чтобы он работал на дефолтном порту mongodb
-        int port = 27017;
+        int port = targetMongoProperties.getPort() == null || targetMongoProperties.getPort() <= 0 ?
+                MongoProperties.DEFAULT_PORT : targetMongoProperties.getPort();
         return MongodConfig.builder()
                 .net(new Net(port, Network.localhostIsIPv6()))
                 .version(Version.Main.PRODUCTION)

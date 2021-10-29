@@ -12,17 +12,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "authors")
-public class Author {
+public class Comment {
     @Id
     private String id;
 
-    @Field(name = "oldid")
-    private Long oldId;
-
-    @Field(name = "surname")
-    private String surname;
-
-    @Field(name = "name")
-    private String name;
+    @Field(name = "text")
+    private String text;
 }
