@@ -36,6 +36,7 @@ import javax.persistence.EntityManagerFactory;
 @Configuration
 @Slf4j
 public class BatchConfig {
+    public static final String JOB_NAME = "transfer data to mongo db";
 
     private static final int CHUNK_SIZE = 5;
 
@@ -56,7 +57,7 @@ public class BatchConfig {
     public Job transferDataJob(Step transferAuthorsStep, Step transferGenresStep, Step transferBooksStep,
                                Step authorsCleanUpStep, Step genresCleanUpStep) {
         return jobBuilderFactory
-                .get("transfer data")
+                .get(JOB_NAME)
                 .start(transferAuthorsStep)
                 .next(transferGenresStep)
                 .next(transferBooksStep)
