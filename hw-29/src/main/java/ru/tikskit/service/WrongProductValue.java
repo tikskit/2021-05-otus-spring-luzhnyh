@@ -1,7 +1,7 @@
 package ru.tikskit.service;
 
-public class InappropriateProductValue extends IllegalArgumentException{
-    public InappropriateProductValue(String s) {
+public class WrongProductValue extends IllegalArgumentException{
+    public WrongProductValue(String s) {
         super(s);
     }
 }

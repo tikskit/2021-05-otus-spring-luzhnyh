@@ -1,4 +1,4 @@
 package ru.tikskit.service;
 
-public class ProductNotFound {
+public class ProductNotFound extends RuntimeException{
 }

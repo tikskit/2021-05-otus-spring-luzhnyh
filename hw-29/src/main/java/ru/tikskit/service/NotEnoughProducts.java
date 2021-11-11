@@ -1,4 +1,4 @@
 package ru.tikskit.service;
 
-public class NotEnoughProducts {
+public class NotEnoughProducts extends RuntimeException{
 }
