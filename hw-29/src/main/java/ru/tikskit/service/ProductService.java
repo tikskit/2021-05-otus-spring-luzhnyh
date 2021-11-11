@@ -1,5 +1,7 @@
 package ru.tikskit.service;
 
+import ru.tikskit.model.Product;
+
 public interface ProductService {
     /**
      * Увеличивает остаток на value
@@ -19,4 +21,11 @@ public interface ProductService {
      * @throws NotEnoughProducts если продукт остаток на складе меньше value. В этом случае списание не происходит
      */
     int decQuantity(long productId, int value);
+
+    /**
+     * Добавляем новый продукт в БД
+     * @param product новый продукт
+     * @return добавленный продукт (заполнен Id)
+     */
+    Product addNewProduct(Product product);
 }

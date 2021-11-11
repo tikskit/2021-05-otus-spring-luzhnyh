@@ -53,4 +53,13 @@ public class ProductServiceImpl implements ProductService {
             throw new NotEnoughProducts();
         }
     }
+
+    @Override
+    public Product addNewProduct(Product product) {
+        Product newProduct = productRepository.save(product);
+
+        promo.promote(new ProductChanges(null, productConverter.toDto(newProduct)));
+
+        return newProduct;
+    }
 }
