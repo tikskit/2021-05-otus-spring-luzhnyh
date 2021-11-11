@@ -28,11 +28,6 @@ public class Channels {
     private final BrandNewProductService brandNewProductService;
     private final OnlyFewLeftService onlyFewLeftService;
 
-    @Bean
-    public MessageChannel publishSubscribe() {
-        return MessageChannels.publishSubscribe("pubsub1").get();
-    }
-
     /**
      * Тут конфигурируем бизнес-логику обработки изменения товара на остатке
      *
@@ -40,7 +35,7 @@ public class Channels {
      */
     @Bean
     public IntegrationFlow channelFlow() {
-        return IntegrationFlows.from("productServiceInChannel")
+        return IntegrationFlows.from("productChangesChannel")
                 .channel(c -> c.executor(Executors.newCachedThreadPool())) // Поток сервиса не хочет ждать окончания этой обработки
                 .<ProductChanges>filter(pc -> pc.getCurProduct() != null)
                 .publishSubscribeChannel(c -> // обрабатываем случай, когда товар снова появился в наличии

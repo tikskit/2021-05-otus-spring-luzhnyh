@@ -6,6 +6,6 @@ import ru.tikskit.config.dto.ProductChanges;
 
 @MessagingGateway
 public interface PromoGateway {
-    @Gateway(requestChannel = "productServiceInChannel")
+    @Gateway(requestChannel = "productChangesChannel")
     void promote(ProductChanges changes);
 }
