@@ -9,7 +9,7 @@ public class BrandNewProductServiceImpl implements BrandNewProductService {
     public void addProduct(ProductDto productDto) {
         System.out.println(
                 String.format(
-                        "BrandNewProduct service has registered the new product and it will be included in weekly email: %s. ThreadId=%s",
+                        "BrandNewProduct service has registered the new product and it will be included in the weekly email: %s. ThreadId=%s",
                         productDto, Thread.currentThread().getId())
         );
 

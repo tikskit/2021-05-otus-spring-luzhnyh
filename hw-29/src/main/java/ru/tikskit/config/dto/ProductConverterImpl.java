@@ -1,7 +1,6 @@
-package ru.tikskit.service;
+package ru.tikskit.config.dto;
 
 import org.springframework.stereotype.Component;
-import ru.tikskit.config.dto.ProductDto;
 import ru.tikskit.model.Product;
 
 @Component

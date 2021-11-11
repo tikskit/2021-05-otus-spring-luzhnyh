@@ -3,6 +3,7 @@ package ru.tikskit.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.tikskit.config.dto.ProductChanges;
+import ru.tikskit.config.dto.ProductConverter;
 import ru.tikskit.config.dto.ProductDto;
 import ru.tikskit.model.Product;
 import ru.tikskit.promo.PromoGateway;
