@@ -1,7 +1,5 @@
 package ru.tikskit.service;
 
-import ru.tikskit.model.Product;
-
 public interface ProductService {
     /**
      * Увеличивает остаток на value
