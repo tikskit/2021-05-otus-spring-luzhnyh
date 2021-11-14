@@ -3,6 +3,7 @@ package ru.tikskit.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.tikskit.domain.Book;
 import ru.tikskit.service.DBAuthorService;
@@ -35,9 +36,7 @@ public class BookPagesController {
     }
 
     @GetMapping("/editbook")
-    public String editBook(@RequestParam("id") long id, Model model) {
-        Book book = bookService.getBook(id).orElseThrow(BookCrudException::new);
-
+    public String editBook(@RequestParam("id") Book book, Model model) {
         model.addAttribute("book", book);
         model.addAttribute("authors", authorService.getAll());
         model.addAttribute("genres", genreService.getAll());

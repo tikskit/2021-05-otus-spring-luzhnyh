@@ -238,4 +238,13 @@ class BookDaoJpaTest {
 
         assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(1);
     }
+
+    @DisplayName("позволять добавлять несколько книг с одним и тем же наименованием и автором, но разным регистром символов")
+    @Test
+    public void souldAllowBooksWithTheSameNamesAndDiffCase() {
+        Genre genre = genreDao.save(new Genre(0, "sci-fi"));
+        Author author = authorDao.save(new Author(0, "Васильев", "Владимир"));
+        Book book1 = bookDao.save(new Book(0, "Черная эстафета", author, genre, null));
+        Book book2 = bookDao.save(new Book(0, "Черная Эстафета", author, genre, null));
+    }
 }
