@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:shop
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    show-sql: true
+
+logging:
+  level:
+    root: ERROR
+    org.hibernate.SQL: DEBUG
+
+
