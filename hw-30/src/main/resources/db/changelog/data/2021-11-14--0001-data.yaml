@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021-11-14--0001-data
+      author: tikskit
+      changes:
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  1
+               -  column:
+                    name: dayno
+                    value:  1
+               -  column:
+                    name: description
+                    value:  "Новый год"
+             tableName: holidays
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  2
+               -  column:
+                    name: dayno
+                    value:  23
+               -  column:
+                    name: description
+                    value:  "День советской армм"
+             tableName: holidays
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  3
+               -  column:
+                    name: dayno
+                    value:  8
+               -  column:
+                    name: description
+                    value:  "Международный женский день"
+             tableName: holidays
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  5
+               -  column:
+                    name: dayno
+                    value:  1
+               -  column:
+                    name: description
+                    value:  "День весны и труда"
+             tableName: holidays
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  5
+               -  column:
+                    name: dayno
+                    value:  9
+               -  column:
+                    name: description
+                    value:  "День победы"
+             tableName: holidays
+        -  insert:
+             columns:
+               -  column:
+                    name: monthno
+                    value:  11
+               -  column:
+                    name: dayno
+                    value:  7
+               -  column:
+                    name: description
+                    value:  "День социалистической октябрьской революции"
+             tableName: holidays

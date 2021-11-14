@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:holidaysdb
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    show-sql: true
+  liquibase:
+    enabled: true
+  h2:
+    console:
+      enabled: true
