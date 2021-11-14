@@ -7,8 +7,6 @@ spring:
       ddl-auto: none
     generate-ddl: false
     show-sql: true
-  liquibase:
-    enabled: true
   h2:
     console:
       enabled: true

@@ -6,8 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -18,10 +19,20 @@ import javax.persistence.Table;
 @Table(name = "holidays")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Holiday {
-    @Embedded
-    @EqualsAndHashCode.Include
     @Id
-    private HolidayId id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "monthno")
+    @EqualsAndHashCode.Include
+    private int monthNo;
+
+    @Column(name = "dayno")
+    @EqualsAndHashCode.Include
+    private int dayNo;
+
     @Column(name = "description")
+    @EqualsAndHashCode.Include
     private String description;
 }
