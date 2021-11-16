@@ -20,4 +20,5 @@ public interface DBBookService {
 
     List<Book> getAll();
     List<Book> getByAuthor(Author author);
+    long getCount();
 }

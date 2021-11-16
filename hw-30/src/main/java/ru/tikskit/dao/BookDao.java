@@ -7,10 +7,5 @@ import ru.tikskit.domain.Book;
 import java.util.List;
 
 public interface BookDao extends JpaRepository<Book, Long> {
-
-/*
-    @Query("")
-    List<Book> findDoubles();
-*/
     List<Book> findByAuthorId(long authorId);
 }

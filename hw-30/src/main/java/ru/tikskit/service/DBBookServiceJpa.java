@@ -62,4 +62,9 @@ public class DBBookServiceJpa implements DBBookService {
     public List<Book> getByAuthor(Author author) {
         return bookDao.findByAuthorId(author.getId());
     }
+
+    @Override
+    public long getCount() {
+        return bookDao.count();
+    }
 }
