@@ -41,7 +41,6 @@ public class BookControllerTest {
     @MockBean
     private DBGenreService genreService;
 
-
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -133,6 +132,7 @@ public class BookControllerTest {
                         setGenreName("fantasy").
                         build()
         ));
+
         when(authorService.getAuthor(3)).thenReturn(Optional.of(new Author(3, "Лукьяненко", "Сергей")));
         when(genreService.getGenre(54)).thenReturn(Optional.of(new Genre(54, "sci-fi")));
         Book changedBook = new BookBuilder().
