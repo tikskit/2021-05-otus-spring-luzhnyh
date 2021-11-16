@@ -1,5 +1,6 @@
 package ru.tikskit.service;
 
+import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 
 import java.util.List;
@@ -18,4 +19,5 @@ public interface DBBookService {
     void deleteBookById(long id);
 
     List<Book> getAll();
+    List<Book> getByAuthor(Author author);
 }

@@ -12,5 +12,5 @@ public interface BookDao extends JpaRepository<Book, Long> {
     @Query("")
     List<Book> findDoubles();
 */
-
+    List<Book> findByAuthorId(long authorId);
 }
