@@ -3,7 +3,7 @@ package ru.tikskit.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import ru.tikskit.repositories.ProductRepository;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Служба продуктов должна")
-@DataJpaTest
+@SpringBootTest
 @Import(ProductServiceImpl.class)
 class ProductServiceImplTest {
     @MockBean
