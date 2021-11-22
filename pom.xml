@@ -98,6 +98,7 @@
         <module>hw-26</module>
         <module>hw-29</module>
         <module>hw-30</module>
+        <module>hw-32</module>
     </modules>
 
     <build>
