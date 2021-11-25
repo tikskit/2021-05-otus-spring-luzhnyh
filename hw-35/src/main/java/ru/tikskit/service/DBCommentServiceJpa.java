@@ -26,7 +26,7 @@ public class DBCommentServiceJpa implements DBCommentService {
 
     @Override
     public Optional<Comment> getComment(long id) {
-        Optional<Comment> commentOptional = Optional.of(commentDao.getById(id));
+        Optional<Comment> commentOptional = commentDao.findById(id);
         logger.info("Comment got from db: {}", commentOptional.get());
         return commentOptional;
     }

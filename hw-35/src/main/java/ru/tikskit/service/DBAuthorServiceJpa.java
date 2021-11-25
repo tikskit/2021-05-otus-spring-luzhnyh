@@ -1,7 +1,9 @@
 package ru.tikskit.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +16,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@NoArgsConstructor
 @AllArgsConstructor
 public class DBAuthorServiceJpa implements DBAuthorService {
     private static final Logger logger = LoggerFactory.getLogger(DBAuthorServiceJpa.class);
 
     @Autowired
-    private final AuthorDao authorDao;
+    private AuthorDao authorDao;
     @Autowired
-    private final AuthorCache authorCache;
+    private AuthorCache authorCache;
 
     @Override
-    @HystrixCommand(commandKey = "getAuthorKey", defaultFallback = "getFromCache")
+    @HystrixCommand(commandKey = "getAuthorKey", defaultFallback = "getFromCache",
+            commandProperties= {
+                    @HystrixProperty(name="execution.isolation.thread.timeoutInMilliseconds", value="7000")
+            })
     public Optional<Author> getAuthor(long id) {
-        Author author = authorDao.getById(id);
-        logger.info("Auhtor got from db: {}", author);
-        authorCache.put(id, author);
-        return Optional.of(author);
+        Optional<Author> author = authorDao.findById(id);
+        logger.info("Auhtor got from db: {}", author.orElse(null));
+        author.ifPresent(value -> authorCache.put(id, value));
+        return author;
     }
 
     @HystrixCommand(commandKey = "getAuthorKey", defaultFallback = "getPushkin")
-    public Optional<Author>  getFromCache(long id) {
+    public Optional<Author> getFromCache(long id) {
         return Optional.ofNullable(authorCache.get(id));
     }
 

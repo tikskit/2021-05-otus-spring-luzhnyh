@@ -3,13 +3,15 @@ package ru.tikskit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
-//@EnableCircuitBreaker
+@EnableCircuitBreaker
 public class HystrixApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HystrixApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(HystrixApplication.class, args);
 	}
 
 }
+

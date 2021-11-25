@@ -21,7 +21,7 @@ public class DBBookServiceJpa implements DBBookService {
 
     @Override
     public Optional<Book> getBook(long id) {
-        Optional<Book> bookOptional = Optional.of(bookDao.getById(id));
+        Optional<Book> bookOptional = bookDao.findById(id);
         logger.info("Book got from db: {}", bookOptional.get());
         return bookOptional;
     }

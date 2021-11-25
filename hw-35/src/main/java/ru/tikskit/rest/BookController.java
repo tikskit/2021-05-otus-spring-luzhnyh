@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.tikskit.controller.AuthorNotFoundException;
 import ru.tikskit.controller.BookCrudException;
 import ru.tikskit.controller.GenreNotFoundException;
+import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.domain.Author;
 import ru.tikskit.domain.Book;
 import ru.tikskit.domain.Comment;
@@ -36,6 +37,7 @@ public class BookController {
     private final DBGenreService genreService;
     private final CommentConverter commentConverter;
     private final BookConverter bookConverter;
+    private final AuthorDao authorDao;
 
     @GetMapping("/api/book")
     public List<BookDto> listPage() {

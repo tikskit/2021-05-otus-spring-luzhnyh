@@ -21,7 +21,7 @@ public class DBGenreServiceJpa implements DBGenreService {
 
     @Override
     public Optional<Genre> getGenre(long id) {
-        Optional<Genre> genreOptional =  Optional.of(genreDao.getById(id));
+        Optional<Genre> genreOptional =  genreDao.findById(id);
         logger.info("Genre got from db: {}", genreOptional.get());
         return genreOptional;
     }
