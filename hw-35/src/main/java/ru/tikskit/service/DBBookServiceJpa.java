@@ -29,10 +29,11 @@ public class DBBookServiceJpa implements DBBookService {
     }
 
     public Optional<Book> getBookFromCache(long id) {
-        return Optional.ofNullable(bookCache.get(id));
+        return bookCache.get(id);
     }
 
     @Override
+    @HystrixCommand(commandKey = "addBookKey", fallbackMethod = "addBookToCache")
     public Book addBook(Book book) {
         Book res = bookDao.save(book);
         logger.info("Book added {}", res);
@@ -40,7 +41,15 @@ public class DBBookServiceJpa implements DBBookService {
         return res;
     }
 
+    public Book addBookToCache(Book book) {
+        if (book.getId() > 0) {
+            bookCache.put(book.getId(), book);
+        }
+        return book;
+    }
+
     @Override
+    @HystrixCommand(commandKey = "changeBookKey", fallbackMethod = "replaceBookInCache")
     public Book changeBook(Book book) {
         Book updated = bookDao.save(book);
         logger.info("Book updated {}", updated);
@@ -48,16 +57,23 @@ public class DBBookServiceJpa implements DBBookService {
         return updated;
     }
 
+    public Book replaceBookInCache(Book book) {
+        bookCache.put(book.getId(), book);
+        return book;
+    }
+
     @Override
     public void deleteBook(Book book) {
         bookDao.delete(book);
         logger.info("Book deleted {}", book);
+        bookCache.delete(book.getId());
     }
 
     @Override
     public void deleteBookById(long id) {
         bookDao.deleteById(id);
         logger.info("Book deleted {}", id);
+        bookCache.delete(id);
     }
 
     @Override

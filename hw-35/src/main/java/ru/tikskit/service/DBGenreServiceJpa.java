@@ -31,7 +31,7 @@ public class DBGenreServiceJpa implements DBGenreService {
 
     @HystrixCommand(commandKey = "getGenreKey", fallbackMethod = "getGenreStub")
     public Optional<Genre> getGenreFromCache(long id) {
-        return Optional.of(genreCache.get(id));
+        return genreCache.get(id);
     }
 
     public Optional<Genre> getGenreStub(long id) {
@@ -39,11 +39,19 @@ public class DBGenreServiceJpa implements DBGenreService {
     }
 
     @Override
+    @HystrixCommand(commandKey = "saveGenreKey", fallbackMethod = "saveGenreToCache")
     public Genre saveGenre(Genre genre) {
         Genre res = genreDao.save(genre);
         logger.info("Genre added {}", res);
         genreCache.put(genre.getId(), genre);
         return res;
+    }
+
+    public Genre saveGenreToCache(Genre genre) {
+        if (genre.getId() > 0) {
+            genreCache.put(genre.getId(), genre);
+        }
+        return genre;
     }
 
     @Override

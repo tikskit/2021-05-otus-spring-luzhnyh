@@ -34,7 +34,7 @@ public class DBAuthorServiceJpa implements DBAuthorService {
 
     @HystrixCommand(commandKey = "getAuthorKey", fallbackMethod = "getPushkin")
     public Optional<Author> getFromCache(long id) {
-        return Optional.ofNullable(authorCache.get(id));
+        return authorCache.get(id);
     }
 
     public Optional<Author> getPushkin(long id) {
@@ -42,11 +42,19 @@ public class DBAuthorServiceJpa implements DBAuthorService {
     }
 
     @Override
+    @HystrixCommand(commandKey = "saveAuthorKey", fallbackMethod = "saveAuthorToCache")
     public Author saveAuthor(Author author) {
         Author res = authorDao.save(author);
         logger.info("Author added {}", res);
         authorCache.put(author.getId(), author);
         return res;
+    }
+
+    public Author saveAuthorToCache(Author author) {
+        if (author.getId() > 0) {
+            authorCache.put(author.getId(), author);
+        }
+        return author;
     }
 
     @Override
