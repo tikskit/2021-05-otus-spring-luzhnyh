@@ -11,3 +11,9 @@ spring:
     shell:
       interactive:
         enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE

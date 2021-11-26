@@ -1,36 +1,30 @@
 package ru.tikskit.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tikskit.dao.AuthorDao;
 import ru.tikskit.domain.Author;
-import ru.tikskit.service.cache.AuthorCache;
+import ru.tikskit.service.cache.Cache;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@NoArgsConstructor
 @AllArgsConstructor
 public class DBAuthorServiceJpa implements DBAuthorService {
     private static final Logger logger = LoggerFactory.getLogger(DBAuthorServiceJpa.class);
 
     @Autowired
-    private AuthorDao authorDao;
+    private final AuthorDao authorDao;
     @Autowired
-    private AuthorCache authorCache;
+    private final Cache<Author> authorCache;
 
     @Override
-    @HystrixCommand(commandKey = "getAuthorKey", defaultFallback = "getFromCache",
-            commandProperties= {
-                    @HystrixProperty(name="execution.isolation.thread.timeoutInMilliseconds", value="7000")
-            })
+    @HystrixCommand(commandKey = "getAuthorKey", fallbackMethod = "getFromCache")
     public Optional<Author> getAuthor(long id) {
         Optional<Author> author = authorDao.findById(id);
         logger.info("Auhtor got from db: {}", author.orElse(null));
@@ -38,17 +32,13 @@ public class DBAuthorServiceJpa implements DBAuthorService {
         return author;
     }
 
-    @HystrixCommand(commandKey = "getAuthorKey", defaultFallback = "getPushkin")
+    @HystrixCommand(commandKey = "getAuthorKey", fallbackMethod = "getPushkin")
     public Optional<Author> getFromCache(long id) {
         return Optional.ofNullable(authorCache.get(id));
     }
 
-    public Optional<Author> getPushkin() {
+    public Optional<Author> getPushkin(long id) {
         return Optional.of(createPushkin());
-    }
-
-    private Author createPushkin() {
-        return new Author(0L, "Пушкин", "Александр");
     }
 
     @Override
@@ -60,12 +50,12 @@ public class DBAuthorServiceJpa implements DBAuthorService {
     }
 
     @Override
-    @HystrixCommand(commandKey = "getAllAuthorsKey", defaultFallback = "getAllFromCache")
+    @HystrixCommand(commandKey = "getAllAuthorsKey", fallbackMethod = "getAllFromCache")
     public List<Author> getAll() {
         return authorDao.findAll();
     }
 
-    @HystrixCommand(commandKey = "getAllAuthorsKey", defaultFallback = "getAllTimeStub")
+    @HystrixCommand(commandKey = "getAllAuthorsKey", fallbackMethod = "getAllTimeStub")
     public List<Author> getAllFromCache() {
         return authorCache.getAll();
     }
@@ -74,4 +64,7 @@ public class DBAuthorServiceJpa implements DBAuthorService {
         return List.of(createPushkin());
     }
 
+    private Author createPushkin() {
+        return new Author(0L, "Пушкин", "Александр");
+    }
 }

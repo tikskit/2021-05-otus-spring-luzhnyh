@@ -1,5 +1,7 @@
 package ru.tikskit.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,22 +15,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class DBCommentServiceJpa implements DBCommentService {
     private static final Logger logger = LoggerFactory.getLogger(DBCommentServiceJpa.class);
 
     private final CommentDao commentDao;
     private final DBBookService dbBookService;
 
-    public DBCommentServiceJpa(CommentDao commentDao, DBBookService dbBookService) {
-        this.commentDao = commentDao;
-        this.dbBookService = dbBookService;
-    }
-
     @Override
+    @HystrixCommand(commandKey = "getCommentKey", fallbackMethod = "getCommentStub")
     public Optional<Comment> getComment(long id) {
         Optional<Comment> commentOptional = commentDao.findById(id);
         logger.info("Comment got from db: {}", commentOptional.get());
         return commentOptional;
+    }
+
+    public Optional<Comment> getCommentStub(long id) {
+        return Optional.of(new Comment(0L, "N/A"));
     }
 
     @Transactional

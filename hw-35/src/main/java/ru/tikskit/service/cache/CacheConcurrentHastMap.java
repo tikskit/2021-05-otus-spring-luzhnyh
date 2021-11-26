@@ -1,7 +1,6 @@
 package ru.tikskit.service.cache;
 
 import org.springframework.stereotype.Component;
-import ru.tikskit.domain.Author;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,21 +8,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class AuthorCacheConcurrentHashMap implements AuthorCache {
-    private final Map<Long, Author> data = new ConcurrentHashMap<>();
+public class CacheConcurrentHastMap<T> implements Cache<T> {
+    private final Map<Long, T> data = new ConcurrentHashMap<>();
 
     @Override
-    public Author get(long id) {
+    public T get(long id) {
         return data.get(id);
     }
 
     @Override
-    public Author put(long id, Author author) {
-        return data.put(id, author);
+    public T put(long id, T t) {
+        return data.put(id, t);
     }
 
     @Override
-    public List<Author> getAll() {
+    public List<T> getAll() {
         return new ArrayList<>(data.values());
     }
 }
